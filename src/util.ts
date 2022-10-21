@@ -9,6 +9,8 @@ export type PageState = {
   heliChannel: string,
   heliWindow: spjs.luxon.Interval,
   datalink: spjs.datalink.DataLinkConnection | null,
+  quakeList: Array<Quake>,
+  channelList: Array<Channel>,
 };
 
 export function clearContent(div: HTMLDivElement) {

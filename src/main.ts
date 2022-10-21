@@ -1,6 +1,6 @@
 import './style.css'
 import typescriptLogo from './typescript.svg'
-import { setupCounter } from './counter'
+import { do_earthquakes } from './do_earthquakes'
 import { do_helicorder } from './do_helicorder'
 import { do_realtime } from './do_realtime'
 import { do_seismograph } from './do_seismograph'
@@ -11,6 +11,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
     <h1>Junkyard Seismology</h1>
     <div class="card">
+      <button id="earthquakes" type="button">Earthquakes</button>
       <button id="seismograph" type="button">Seismograph</button>
       <button id="helicorder" type="button">Helicorder</button>
       <button id="realtime" type="button">Realtime</button>
@@ -33,13 +34,20 @@ let pageState: PageState = {
   heliChannel: "HHZ",
   heliWindow: spjs.util.durationEnd("P1D", heliEnd),
   datalink: null,
+  quakeList: [],
+  channelList: [],
 };
 
 
 
 function setupButtons(pageState) {
-  let button = document.querySelector<HTMLButtonElement>('#seismograph');
-  button.addEventListener('click', () => {
+  let ebutton = document.querySelector<HTMLButtonElement>('#earthquakes');
+  ebutton.addEventListener('click', () => {
+    do_earthquakes(pageState);
+  });
+
+  let sbutton = document.querySelector<HTMLButtonElement>('#seismograph');
+  sbutton.addEventListener('click', () => {
     do_seismograph(pageState);
   });
 

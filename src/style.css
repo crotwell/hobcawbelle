@@ -21,9 +21,19 @@
   width: 100%;
 }
 
+sp-station-event-map {
+  height: 500px;
+  width: 300px;
+}
 sp-seismograph {
   height: 300px;
   width: 100%;
+}
+
+div.maptable {
+  display: flex;
+  flex-flow: row wrap;
+
 }
 a {
   font-weight: 500;
