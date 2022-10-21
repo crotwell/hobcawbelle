@@ -1,6 +1,8 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
+
+import { do_seismograph } from './do_seismograph'
 import {clearContent} from './util';
 import type {PageState} from './util';
 
@@ -10,14 +12,46 @@ const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
 const Helicorder = seisplotjs.helicorder.Helicorder;
 
 const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
-const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
 
 export function do_helicorder(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
-  let dateChooser = new spjs.datechooser.DateTimeChooser();
-  div.appendChild(dateChooser);
-  let heli = new spjs.helicorder.Helicorder();
+
+  let timeChooser = new spjs.datechooser.TimeRangeChooser();
+  timeChooser.end = pageState.heliWindow.end;
+  timeChooser.start = pageState.heliWindow.start;
+  timeChooser.updateCallback = (interval) => {
+    const in_heli = document.querySelector("sp-helicorder");
+    in_heli.heliConfig.fixedTimeScale = interval
+    pageState.heliWindow = interval;
+    loadHeli(pageState).then(sddList => {
+      in_heli.seisData = sddList;
+    });
+  }
+  div.appendChild(timeChooser);
+  const heliConfig = new HelicorderConfig(pageState.heliWindow);
+  const heli = new spjs.helicorder.Helicorder([], heliConfig);
+  heli.addEventListener("heliclick", hEvent => {
+      const centerTime = hEvent.detail.time;
+      //const hwValue = document.querySelector("#clickinterval").value;
+      const hwValue = 120;
+      let dur;
+      if ( ! Number.isNaN(Number.parseFloat(hwValue))) {
+        // assume seconds
+        dur = spjs.luxon.Duration.fromMillis(1000*Number.parseFloat(hwValue));
+      } else {
+        dur = spjs.luxon.Duration.fromISO(hwValue);
+      }
+      let halfWidth;
+      if (dur.toMillis() > 0 ) {
+        halfWidth = spjs.luxon.Duration.fromMillis(dur.toMillis()/2);
+      } else {
+        halfWidth = spjs.luxon.Duration.fromMillis(-1*dur.toMillis()/2);
+      }
+      pageState.window = spjs.util.startEnd(centerTime.minus(halfWidth),
+                                            centerTime.plus(halfWidth));
+      do_seismograph(pageState);
+    });
   div.appendChild(heli);
   loadHeli(pageState).then(sddList => {
     heli.seisData = sddList;
