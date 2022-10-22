@@ -1,7 +1,7 @@
 import './style.css'
 import typescriptLogo from './typescript.svg'
 import { do_earthquakes } from './do_earthquakes'
-import { do_helicorder } from './do_helicorder'
+import { do_helicorder, getHeliNowTime } from './do_helicorder'
 import { do_realtime } from './do_realtime'
 import { do_seismograph } from './do_seismograph'
 import type { PageState } from './util'
@@ -21,10 +21,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-let heliEnd = spjs.luxon.DateTime.utc().plus({hour: 1}).startOf("hour");
-if (heliEnd.hour % 2 === 1) {
-  heliEnd = heliEnd.plus({hour: 1});
-}
+let heliEnd = getHeliNowTime();
 let pageState: PageState = {
   window: spjs.util.durationEnd(300, "now"),
   network: "CO",

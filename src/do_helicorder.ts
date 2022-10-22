@@ -17,6 +17,7 @@ export function do_helicorder(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
 
+
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
   timeChooser.end = pageState.heliWindow.end;
   timeChooser.start = pageState.heliWindow.start;
@@ -29,6 +30,15 @@ export function do_helicorder(pageState: PageState) {
     });
   }
   div.appendChild(timeChooser);
+  let timeDiv = div.appendChild(document.createElement("div"));
+  timeDiv.innerHTML = `
+<button id="loadToday">Today</button>
+<button id="loadNow">Now</button>
+<button id="loadPrev">Previous</button>
+<button id="loadNext">Next</button>
+  `;
+  initTimeButtons(pageState);
+
   const heliConfig = new HelicorderConfig(pageState.heliWindow);
   const heli = new spjs.helicorder.Helicorder([], heliConfig);
   heli.addEventListener("heliclick", hEvent => {
@@ -76,4 +86,45 @@ export function loadHeli(pageState: PageState): Promise<SeismogramDisplayData> {
                                                         pageState.heliWindow.start,
                                                         pageState.heliWindow.end);
   return minMaxQ.loadSeismograms([minMaxSDD]);
+}
+
+
+export const HOURS_PER_LINE = 2;
+
+export function getHeliNowTime() {
+  let e = spjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
+  console.log(`getHeliNowTime ${e}  ${e.hour % HOURS_PER_LINE}`)
+  e = e.plus({hours: e.hour % HOURS_PER_LINE});
+  return e;
+}
+
+export function initTimeButtons(pageState: PageState) {
+  document.querySelector("button#loadNow")
+  .addEventListener("click", function(d) {
+    let trChooser = document.querySelector("sp-timerange");
+    trChooser.duration = trChooser.duration;
+    trChooser.end = getHeliNowTime();
+  });
+
+  document.querySelector("button#loadToday")
+  .addEventListener("click", function(d) {
+    let trChooser = document.querySelector("sp-timerange");
+    trChooser.duration = trChooser.duration;
+    trChooser.end = luxon.DateTime.utc().endOf('day').plus({millisecond: 1}).toISO();
+  });
+
+  document.querySelector("button#loadPrev")
+  .addEventListener("click", function(d) {
+    let trChooser = document.querySelector("sp-timerange");
+    trChooser.duration = trChooser.duration;
+    trChooser.end = trChooser.start;
+  });
+
+  document.querySelector("button#loadNext")
+  .addEventListener("click", function(d) {
+    let trChooser = document.querySelector("sp-timerange");
+    trChooser.duration = trChooser.duration;
+    trChooser.start = trChooser.end;
+  });
+
 }
