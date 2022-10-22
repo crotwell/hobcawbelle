@@ -114,7 +114,10 @@ export function do_realtime(pageState: PageState) {
           if (response.isError()) {
             console.log(`response is not OK, ignore... ${response}`);
           }
-          pageState.datalink.stream();
+          return pageState.datalink.positionAfter(timeWindow.start);
+        }).then(response => {
+          console.log(`positionAfter response: ${response}`)
+          return pageState.datalink.stream();
         });
 }
 
