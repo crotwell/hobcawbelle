@@ -8,17 +8,8 @@ import type { PageState } from './util'
 import * as spjs from 'seisplotjs'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <h1>Junkyard Seismology</h1>
-    <div class="card">
-      <button id="earthquakes" type="button">Earthquakes</button>
-      <button id="seismograph" type="button">Seismograph</button>
-      <button id="helicorder" type="button">Helicorder</button>
-      <button id="realtime" type="button">Realtime</button>
-    </div>
     <div id="content">
     </div>
-  </div>
 `
 
 let heliEnd = getHeliNowTime();

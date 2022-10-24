@@ -76,7 +76,7 @@ export function loadEarthquakes(pageState: PageState): Promise<Array<Quake>> {
     .then(quakeList => {
       const start = spjs.util.isoToDateTime('2021-12-01T00:00:00Z');
       return quakeList.filter(q => q.time > start)
-        .filter(q => q.latitude > 34 && q.latitude < 34.2 && q.longitude > -80.9 && q.longitude < -80.5);
+        .filter(q => q.latitude > 34 && q.latitude < 34.4 && q.longitude > -80.9 && q.longitude < -80.5);
     })
     .then(quakeList => {
       quakeList.forEach(q => console.log(`${q.time} ${q.latitude} ${q.longitude}`))

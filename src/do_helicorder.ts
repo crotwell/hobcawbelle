@@ -110,7 +110,7 @@ export function initTimeButtons(pageState: PageState) {
   .addEventListener("click", function(d) {
     let trChooser = document.querySelector("sp-timerange");
     trChooser.duration = trChooser.duration;
-    trChooser.end = luxon.DateTime.utc().endOf('day').plus({millisecond: 1}).toISO();
+    trChooser.end = spjs.luxon.DateTime.utc().endOf('day').plus({millisecond: 1});
   });
 
   document.querySelector("button#loadPrev")

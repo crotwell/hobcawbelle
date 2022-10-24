@@ -15,19 +15,50 @@
   -webkit-text-size-adjust: 100%;
 }
 
+header p {
+  font-size: smaller;
+  position: absolute;
+  margin: 0;
+  top: 0;
+  left: 0;
+}
+header p a {
+  font-style: italic;
+}
+
+h1 {
+  font-size: 3.2em;
+  margin-top: 0.5em;
+  margin-bottom: 0px;
+}
+header  {
+  margin: 0 auto;
+  text-align: center;
+}
+
 #content {
   min-height: 500px;
   height: 85%;
   width: 100%;
+  position: static;
 }
 
+sp-timerange {
+  padding-bottom: 0.6em;
+  display: block;
+}
 sp-station-event-map {
   height: 500px;
   width: 300px;
+  position: sticky;
+  top: 30px;
 }
 sp-seismograph {
   height: 300px;
   width: 100%;
+}
+sp-helicorder {
+  margin-top: 0.6em;
 }
 
 div.maptable {
@@ -50,26 +81,21 @@ body {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
 #app {
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.6em;
   text-align: center;
 }
 
 
 .card {
-  padding: 2em;
+  padding: 1.6em;
 }
 
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.3em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
