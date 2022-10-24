@@ -11,7 +11,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="content">
     </div>
 `
-
+console.log(`SeisPlotJS: ${spjs.version}`)
+document.querySelector<HTMLSpanElement>('#spjsversion')!.innerHTML = spjs.version;
 let heliEnd = getHeliNowTime();
 let pageState: PageState = {
   window: spjs.util.durationEnd(300, "now"),
