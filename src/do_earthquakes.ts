@@ -17,9 +17,9 @@ export function do_earthquakes(pageState: PageState) {
   div.appendChild(innerDiv);
   let quakeTable = new spjs.infotable.QuakeTable();
   let quakeMap = new spjs.leafletutil.QuakeStationMap();
+  setupSelectable(quakeTable, quakeMap);
   quakeMap.zoomLevel = 12;
   if (pageState.channelList.length > 0) {
-    console.log(`center from channel: ${pageState.channelList[0].latitude}/${pageState.chanList[0].longitude}`)
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
   } else {
@@ -77,10 +77,6 @@ export function loadEarthquakes(pageState: PageState): Promise<Array<Quake>> {
       const start = spjs.util.isoToDateTime('2021-12-01T00:00:00Z');
       return quakeList.filter(q => q.time > start)
         .filter(q => q.latitude > 34 && q.latitude < 34.4 && q.longitude > -80.9 && q.longitude < -80.5);
-    })
-    .then(quakeList => {
-      quakeList.forEach(q => console.log(`${q.time} ${q.latitude} ${q.longitude}`))
-      return quakeList;
     });
 }
 
@@ -95,4 +91,27 @@ export function loadChannels(pageStatus: PageStatus): Promise<Array<Channel>> {
     pageStatus.channelList = allChans;
     return allChans;
   })
+}
+
+
+export const SELECTED_ROW = "selectedRow";
+export function setupSelectable(quakeTable, quakeMap) {
+  quakeTable.addStyle(`
+      table tbody tr.${SELECTED_ROW} td {
+        color: green;
+      }
+    `);
+  quakeTable.addEventListener("quakeclick", ce => {
+      quakeMap.quakeList.forEach(q => {
+        quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+      });
+      quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(ce.detail.quake), "green");
+      let quakeRow = quakeTable.findRowForQuake(ce.detail.quake);
+      let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
+      allRows.forEach(r => {
+        r.classList.remove(SELECTED_ROW);
+      });
+      quakeRow.classList.add(SELECTED_ROW);
+  });
+
 }
