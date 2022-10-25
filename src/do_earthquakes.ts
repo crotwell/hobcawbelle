@@ -17,6 +17,12 @@ export function do_earthquakes(pageState: PageState) {
   div.appendChild(innerDiv);
   let quakeTable = new spjs.infotable.QuakeTable();
   let quakeMap = new spjs.leafletutil.QuakeStationMap();
+  quakeMap.setAttribute(spjs.leafletutil.TILE_TEMPLATE,
+    'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}'
+  );
+  quakeMap.setAttribute(spjs.leafletutil.TILE_ATTRIBUTION,
+    'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+  );
   setupSelectable(quakeTable, quakeMap);
   quakeMap.zoomLevel = 12;
   if (pageState.channelList.length > 0) {
