@@ -5,7 +5,7 @@ import {clearContent} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 
-const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
+const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 
 export function do_seismograph(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
