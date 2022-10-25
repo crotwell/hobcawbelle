@@ -97,6 +97,10 @@ export function loadChannels(pageStatus: PageStatus): Promise<Array<Channel>> {
 export const SELECTED_ROW = "selectedRow";
 export function setupSelectable(quakeTable, quakeMap) {
   quakeTable.addStyle(`
+      td {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
       table tbody tr.${SELECTED_ROW} td {
         color: green;
       }

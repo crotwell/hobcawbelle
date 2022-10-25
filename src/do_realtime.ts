@@ -75,7 +75,7 @@ export function do_realtime(pageState: PageState) {
   };
   // snip start datalink
   pageState.datalink = new seisplotjs.datalink.DataLinkConnection(
-      "ws://thecloud.seis.sc.edu/ringserver/datalink",
+      "wss://thecloud.seis.sc.edu/ringserver/datalink",
       packetHandler,
       errorFn);
 
