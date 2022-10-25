@@ -102,20 +102,32 @@ export function setupSelectable(quakeTable, quakeMap) {
         padding-right: 5px;
       }
       table tbody tr.${SELECTED_ROW} td {
-        color: green;
+        background-color: green;
+        color: white;
       }
     `);
   quakeTable.addEventListener("quakeclick", ce => {
-      quakeMap.quakeList.forEach(q => {
-        quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
-      });
-      quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(ce.detail.quake), "green");
-      let quakeRow = quakeTable.findRowForQuake(ce.detail.quake);
-      let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
-      allRows.forEach(r => {
-        r.classList.remove(SELECTED_ROW);
-      });
-      quakeRow.classList.add(SELECTED_ROW);
+    doSelectQuake(ce.detail.quake, quakeTable, quakeMap);
+  });
+  quakeMap.addEventListener("quakeclick", ce => {
+    doSelectQuake(ce.detail.quake, quakeTable, quakeMap);
+  });
+  quakeMap.addEventListener("stationclick", ce => {
+    console.log(`stationclick: ${ce.detail.station}`);
   });
 
+}
+export function doSelectQuake(quake: Quake,
+                              quakeTable: spjs.infotable.QuakeTable,
+                              quakeMap: spjs.leafletutil.StationEventMap) {
+  quakeMap.quakeList.forEach(q => {
+    quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+  });
+  quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(quake), "green");
+  let quakeRow = quakeTable.findRowForQuake(quake);
+  let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
+  allRows.forEach(r => {
+    r.classList.remove(SELECTED_ROW);
+  });
+  quakeRow.classList.add(SELECTED_ROW);
 }
