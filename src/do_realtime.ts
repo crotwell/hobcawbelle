@@ -13,6 +13,9 @@ const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 export function do_realtime(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
+  let waiting = div.appendChild(document.createElement("p"));
+  waiting.setAttribute("class", "waitingmessage");
+  waiting.textContent = "Waiting on data to arrive...";
   let rtDiv = div.appendChild(document.createElement("div"));
   rtDiv.setAttribute("class", "realtime")
   console.log("realtime")
@@ -41,9 +44,16 @@ export function do_realtime(pageState: PageState) {
     seisplotjs.d3.select("p#error").text("Error: "+error);
   };
 
-  // snip start handle
+  let firstData = true;
   const packetHandler = function(packet) {
     const div = document.querySelector<HTMLDivElement>('div.realtime');
+    if (firstData) {
+      firstData = false;
+      let p = document.querySelector("p.waitingmessage");
+      if (p) {
+        p.parentElement.removeChild(p);
+      }
+    }
     if ( ! div && pageState.datalink) {
       console.log("div not connected, closing datalink")
       pageState.datalink.endStream();
