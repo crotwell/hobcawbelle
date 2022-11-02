@@ -34,14 +34,19 @@ export function do_earthquakes(pageState: PageState) {
   }
   innerDiv.appendChild(quakeMap);
   innerDiv.appendChild(quakeTable);
-  if (pageState.quakeList.length === 0) {
+  if (pageState.quakeList.length === 0 || pageState.channelList.length === 0) {
     Promise.all([loadChannels(pageState), loadEarthquakes(pageState)])
     .then(([chanList, quakeList]) => {
       pageState.quakeList = quakeList;
-      quakeMap.addQuake(quakeList);
-      quakeMap.addStation(chanList[0].station);
-      quakeMap.centerLat = chanList[0].latitude;
-      quakeMap.centerLon = chanList[0].longitude;
+      pageState.channelList = chanList;
+      // draw in reversed order so recent is on top
+      const reversedQuakeList = quakeList.slice().reverse();
+      quakeMap.addQuake(reversedQuakeList);
+      quakeMap.addStation(spjs.stationxml.uniqueStations(chanList));
+      if (chanList.length > 0) {
+        quakeMap.centerLat = chanList[0].latitude;
+        quakeMap.centerLon = chanList[0].longitude;
+      }
       quakeMap.draw();
       quakeTable.quakeList = quakeList;
       quakeTable.draw();
