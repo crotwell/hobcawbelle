@@ -15,7 +15,7 @@ console.log(`SeisPlotJS: ${spjs.version}`)
 document.querySelector<HTMLSpanElement>('#spjsversion')!.innerHTML = spjs.version;
 let heliEnd = getHeliNowTime();
 let pageState: PageState = {
-  window: spjs.util.durationEnd(300, "now"),
+  window: null,
   network: "CO",
   station: "JKYD",
   location: "00",
@@ -25,6 +25,7 @@ let pageState: PageState = {
   datalink: null,
   quakeList: [],
   channelList: [],
+  selectedQuakeList: [],
 };
 
 

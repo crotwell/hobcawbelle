@@ -3,7 +3,7 @@ import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
 
 import { do_seismograph } from './do_seismograph'
-import {clearContent} from './util';
+import {clearContent, DEF_WINDOW_SEC, loadChannels} from './util';
 import type {PageState} from './util';
 
 const DEFAULT_DURATION = "P1D";
@@ -38,13 +38,24 @@ export function do_helicorder(pageState: PageState) {
 <button id="loadNext">Next</button>
   `;
   initTimeButtons(pageState);
+  let chanListDiv = div.appendChild(document.createElement("details"));
+  let summary = chanListDiv.appendChild(document.createElement("summary"));
+  summary.textContent = "Channels";
+  let chanChooser = new spjs.components.ChannelListChooser();
+  chanChooser.type = "radio";
+  chanListDiv.appendChild(chanChooser);
+  if (pageState.channelList.length > 0) {
+    chanChooser.setChannels(pageState.channelList);
+  } else {
+    loadChannels(pageState).then(chanList => chanChooser.setChannels(pageState.channelList));
+  }
 
   const heliConfig = new HelicorderConfig(pageState.heliWindow);
   const heli = new spjs.helicorder.Helicorder([], heliConfig);
   heli.addEventListener("heliclick", hEvent => {
       const centerTime = hEvent.detail.time;
       //const hwValue = document.querySelector("#clickinterval").value;
-      const hwValue = 120;
+      const hwValue = DEF_WINDOW_SEC;
       let dur;
       if ( ! Number.isNaN(Number.parseFloat(hwValue))) {
         // assume seconds
@@ -58,14 +69,23 @@ export function do_helicorder(pageState: PageState) {
       } else {
         halfWidth = spjs.luxon.Duration.fromMillis(-1*dur.toMillis()/2);
       }
+      pageState.selectedQuakeList = [];
       pageState.window = spjs.util.startEnd(centerTime.minus(halfWidth),
                                             centerTime.plus(halfWidth));
       do_seismograph(pageState);
     });
   div.appendChild(heli);
+  chanChooser.addEventListener("change", evt => {
+    if (chanChooser.selectedChannels().length > 0) {
+      pageState.heliChannel = chanChooser.selectedChannels()[0].channelCode;
+      loadHeli(pageState).then(sddList => {
+        heli.seisData = sddList;
+      });
+    }
+  });
   loadHeli(pageState).then(sddList => {
     heli.seisData = sddList;
-  })
+  });
 }
 
 export function loadHeli(pageState: PageState): Promise<SeismogramDisplayData> {
