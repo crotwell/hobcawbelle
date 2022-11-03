@@ -94,6 +94,9 @@ export function do_realtime(pageState: PageState) {
     if ( paused || redrawInProgress) {
       return;
     }
+    if (graphList.size === 0 || ! graphList.values().next().value.isConnected) {
+      return;
+    }
     redrawInProgress = true;
     window.requestAnimationFrame(timestamp => {
       try {
