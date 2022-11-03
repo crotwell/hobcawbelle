@@ -73,9 +73,8 @@ export function do_realtime(pageState: PageState) {
           seisPlot = new seisplotjs.seismograph.Seismograph([seisData], seisPlotConfig);
           div.appendChild(seisPlot);
           graphList.set(codes, seisPlot);
-          console.log(`new plot: ${codes}`)
         } else {
-          seisPlot.seisData[0].seismogram.append(seisSegment);
+          seisPlot.seisData[0].append(seisSegment);
           seisPlot.recheckAmpScaleDomain();
         }
         seisPlot.draw();
@@ -106,7 +105,7 @@ export function do_realtime(pageState: PageState) {
             sdd.alignmentTime = now;
           });
           graph.calcTimeScaleDomain();
-          graph.calcAmpScaleDomain();
+          graph.recheckAmpScaleDomain();
           graph.draw();
         });
       } catch(err) {
@@ -135,5 +134,6 @@ export function do_realtime(pageState: PageState) {
 }
 
 export function formDataLinkMatch(pageState: PageState) {
-  return `${pageState.network}_${pageState.station}_${pageState.location}_HH./MSEED`
+  let chanRE = `(${pageState.channelCodeList.join("|")})`;
+  return `${pageState.network}_${pageState.station}_${pageState.location}_${chanRE}/MSEED`
 }
