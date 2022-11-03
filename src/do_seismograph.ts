@@ -1,7 +1,7 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
-import {clearContent} from './util';
+import {clearContent, loadChannels} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 
@@ -27,7 +27,8 @@ export function do_seismograph(pageState: PageState) {
   div.appendChild(graph);
   loadSeismoData(pageState).then(sddList => {
     timeChooser.updateTimeRange(pageState.window);
-    graph.seisData = sddList;
+    const in_graph = document.querySelector("sp-organized-display");
+    in_graph.seisData = sddList;
   });
 }
 
@@ -35,14 +36,14 @@ export function do_seismograph(pageState: PageState) {
 export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayData> {
   let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
     MSEED_URL, "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-  if (pageState.selectedQuakeList.length > 0) {
-    let chanPromise;
-    if (pageState.channelList.length === 0) {
-      chanPromise = loadChannels(pageState);
-    } else {
-      chanPromise = Promise.resolve(pageState.channelList);
-    }
-    return chanPromise.then(chanList => {
+  let chanPromise;
+  if (pageState.channelList.length === 0) {
+    chanPromise = loadChannels(pageState);
+  } else {
+    chanPromise = Promise.resolve(pageState.channelList);
+  }
+  return chanPromise.then(chanList => {
+    if (pageState.selectedQuakeList.length > 0) {
       let sddList = [];
       const preDur = spjs.luxon.Duration.fromISO("PT30S");
       const postDur = spjs.luxon.Duration.fromISO("PT60S");
@@ -50,7 +51,9 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
         let timeWindow = spjs.luxon.Interval.fromDateTimes(q.time.minus(preDur),
                                                 q.time.plus(postDur));
         pageState.window = timeWindow;
-        chanList.forEach(c => {
+        chanList
+        .filter(c => c.timeRange.overlaps(timeWindow))
+        .forEach(c => {
           let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
           sdd.addQuake(q);
           sdd.addMarkers(spjs.seismograph.createMarkerForOriginTime(q));
@@ -59,16 +62,17 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
         });
       });
       return minMaxQ.loadSeismograms(sddList);
-    });
-  } else {
-    let window = pageState.window ? pageState.window : spjs.util.durationEnd(300, "now");
-    pageState.window = window;
-    let sddList = pageState.channelCodeList.map(c => SeismogramDisplayData.fromCodesAndTimes(pageState.network,
-                                                          pageState.station,
-                                                          pageState.location,
-                                                          c,
-                                                          window.start,
-                                                          window.end));
-    return minMaxQ.loadSeismograms(sddList);
-  }
+    } else {
+      let timeWindow = pageState.window ? pageState.window : spjs.util.durationEnd(300, "now");
+      pageState.window = timeWindow;
+      let sddList = [];
+      chanList
+      .filter(c => c.timeRange.overlaps(timeWindow))
+      .forEach(c => {
+        let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+        sddList.push(sdd);
+      });
+      return minMaxQ.loadSeismograms(sddList);
+    }
+  });
 }

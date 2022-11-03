@@ -56,7 +56,7 @@ export function do_earthquakes(pageState: PageState) {
   } else {
     quakeTable.quakeList = pageState.quakeList;
     quakeMap.addQuake(pageState.quakeList);
-    quakeMap.addStation(pageState.channelList[0].station);
+    quakeMap.addStation(spjs.stationxml.uniqueStations(pageState.channelList));
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
     quakeMap.draw();

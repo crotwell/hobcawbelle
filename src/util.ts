@@ -8,7 +8,8 @@ export type PageState = {
   station: string,
   location: string,
   channelCodeList: Array<string>,
-  heliChannel: string,
+  stationCodeList: Array<string>,
+  heliChannel: FDSNSourceId,
   heliWindow: spjs.luxon.Interval,
   datalink: spjs.datalink.DataLinkConnection | null,
   quakeList: Array<Quake>,
@@ -18,7 +19,7 @@ export type PageState = {
 export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
   let stationQuery = new spjs.fdsnstation.StationQuery()
     .networkCode(pageStatus.network)
-    .stationCode(pageStatus.station)
+    .stationCode(pageStatus.stationCodeList.join(","))
     .locationCode(pageStatus.location)
     .channelCode(pageStatus.channelCodeList.join(","));
   return stationQuery.queryChannels().then(netList => {

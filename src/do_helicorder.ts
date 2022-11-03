@@ -41,13 +41,17 @@ export function do_helicorder(pageState: PageState) {
   let chanListDiv = div.appendChild(document.createElement("details"));
   let summary = chanListDiv.appendChild(document.createElement("summary"));
   summary.textContent = "Channels";
-  let chanChooser = new spjs.components.ChannelListChooser();
+  let chanChooser = new spjs.components.SourceIdListChooser();
   chanChooser.type = "radio";
   chanListDiv.appendChild(chanChooser);
   if (pageState.channelList.length > 0) {
-    chanChooser.setChannels(pageState.channelList);
+    let sidList = spjs.stationxml.uniqueSourceIds(pageState.channelList);
+    chanChooser.setSourceIds(sidList);
   } else {
-    loadChannels(pageState).then(chanList => chanChooser.setChannels(pageState.channelList));
+    loadChannels(pageState).then(chanList => {
+      let sidList = spjs.stationxml.uniqueSourceIds(pageState.channelList);
+      chanChooser.setSourceIds(sidList);
+    });
   }
 
   const heliConfig = new HelicorderConfig(pageState.heliWindow);
@@ -76,8 +80,8 @@ export function do_helicorder(pageState: PageState) {
     });
   div.appendChild(heli);
   chanChooser.addEventListener("change", evt => {
-    if (chanChooser.selectedChannels().length > 0) {
-      pageState.heliChannel = chanChooser.selectedChannels()[0].channelCode;
+    if (chanChooser.selectedSourceIds().length > 0) {
+      pageState.heliChannel = chanChooser.selectedSourceIds()[0];
       loadHeli(pageState).then(sddList => {
         heli.seisData = sddList;
       });
@@ -91,18 +95,24 @@ export function do_helicorder(pageState: PageState) {
 export function loadHeli(pageState: PageState): Promise<SeismogramDisplayData> {
   let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
     MINMAX_URL, "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-  let heliSDD = SeismogramDisplayData.fromCodesAndTimes(pageState.network,
-                                                        pageState.station,
-                                                        pageState.location,
-                                                        pageState.heliChannel,
+  let heliSDD = SeismogramDisplayData.fromSourceIdAndTimes(pageState.heliChannel,
                                                         pageState.heliWindow.start,
                                                         pageState.heliWindow.end);
 
-  let minmaxChan = "LX"+pageState.heliChannel.charAt(2);
-  let minMaxSDD = SeismogramDisplayData.fromCodesAndTimes(pageState.network,
-                                                        pageState.station,
-                                                        pageState.location,
-                                                        minmaxChan,
+  let minMaxSourceCode = pageState.heliChannel.sourceCode;
+  let minMaxBandCode = pageState.heliChannel.bandCode;
+  if (pageState.heliChannel.sourceCode === "H") {
+    minMaxBandCode = "L";
+    minMaxSourceCode = "X";
+  } else if (pageState.heliChannel.sourceCode === "N") {
+    minMaxBandCode = "L";
+    minMaxSourceCode = "Y";
+  }
+  let minmaxChan = new spjs.fdsnsourceid.FDSNSourceId(pageState.heliChannel.networkCode,
+                            pageState.heliChannel.stationCode,
+                            pageState.heliChannel.locationCode,
+                            "L", minMaxSourceCode, pageState.heliChannel.subsourceCode);
+  let minMaxSDD = SeismogramDisplayData.fromSourceIdAndTimes(minmaxChan,
                                                         pageState.heliWindow.start,
                                                         pageState.heliWindow.end);
   return minMaxQ.loadSeismograms([minMaxSDD]);
