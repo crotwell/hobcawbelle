@@ -51,7 +51,7 @@ export function do_earthquakes(pageState: PageState) {
       quakeMap.draw();
       quakeTable.quakeList = quakeList;
       quakeTable.draw();
-      setupSelectable(quakeTable, quakeMap, pageState);
+      doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
     });
   } else {
     quakeTable.quakeList = pageState.quakeList;
@@ -60,7 +60,7 @@ export function do_earthquakes(pageState: PageState) {
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
     quakeMap.draw();
-    setupSelectable(quakeTable, quakeMap, pageState);
+    doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
   }
 }
 
@@ -123,20 +123,31 @@ export function doSelectQuake(quake: Quake,
                               quakeTable: spjs.infotable.QuakeTable,
                               quakeMap: spjs.leafletutil.StationEventMap,
                               pageState: PageState) {
-  if (pageState) {pageState.selectedQuakeList = [quake];}
-  quakeMap.quakeList.forEach(q => {
-    quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
-  });
-  quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(quake), "green");
   let quakeRow = quakeTable.findRowForQuake(quake);
   if (!quakeRow) {
     console.log(`row for quake not found: ${quake}: rows: ${quakeTable._rowToQuake.size}`)
-  } else {
-    let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
-    allRows.forEach(r => {
-      r.classList.remove(SELECTED_ROW);
-    });
-    quakeRow.classList.add(SELECTED_ROW);
   }
-
+  const idx = pageState.selectedQuakeList.indexOf(quake);
+  if (idx !== -1) {
+    // quake already in list, remove
+    pageState.selectedQuakeList.splice(idx,1);
+    quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(quake));
+    if (quakeRow) {
+      quakeRow.classList.remove(SELECTED_ROW);
+    }
+    return;
+  } else {
+    pageState.selectedQuakeList = [quake];
+    quakeMap.quakeList.forEach(q => {
+      quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+    });
+    quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(quake), "green");
+    if (quakeRow) {
+      let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
+      allRows.forEach(r => {
+        r.classList.remove(SELECTED_ROW);
+      });
+      quakeRow.classList.add(SELECTED_ROW);
+    }
+  }
 }

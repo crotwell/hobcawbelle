@@ -7,16 +7,19 @@
   </head>
   <body>
     <header>
-      <p>
-        Created with <a href="https://github.com/crotwell/seisplotjs">SeisPlotJS <span id="spjsversion"></span>.</a>
-      </p>
-      <h1>Junkyard Seismology</h1>
-      <div class="card">
+      <div class="topbanner">
+        <p>
+          Created with <a href="https://github.com/crotwell/seisplotjs">SeisPlotJS <span id="spjsversion"></span>.</a>
+        </p>
+        <h1>Junkyard Seismology</h1>
+      </div>
+      <nav class="card">
         <button id="earthquakes" type="button">Earthquakes</button>
         <button id="seismograph" type="button">Seismograph</button>
         <button id="helicorder" type="button">Helicorder</button>
         <button id="realtime" type="button">Realtime</button>
-      </div>
+        <button id="help" type="button">Help?</button>
+      </nav>
     </header>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>

@@ -4,6 +4,7 @@ import { do_earthquakes } from './do_earthquakes'
 import { do_helicorder, getHeliNowTime } from './do_helicorder'
 import { do_realtime } from './do_realtime'
 import { do_seismograph } from './do_seismograph'
+import { do_help } from './do_help'
 import type { PageState } from './util'
 import * as spjs from 'seisplotjs'
 
@@ -53,7 +54,10 @@ function setupButtons(pageState) {
     do_realtime(pageState);
   });
 
-
+  let helpButton = document.querySelector<HTMLButtonElement>('#help');
+  helpButton.addEventListener('click', () => {
+    do_help(pageState);
+  });
 }
 
 setupButtons(pageState);

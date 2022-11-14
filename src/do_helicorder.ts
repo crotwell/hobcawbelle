@@ -39,6 +39,7 @@ export function do_helicorder(pageState: PageState) {
   `;
   initTimeButtons(pageState);
   let chanListDiv = div.appendChild(document.createElement("details"));
+  chanListDiv.classList.add("helichannel");
   let summary = chanListDiv.appendChild(document.createElement("summary"));
   summary.textContent = "Channels";
   let chanChooser = new spjs.components.SourceIdListChooser();

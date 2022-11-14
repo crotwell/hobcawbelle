@@ -17,20 +17,35 @@
 
 header p {
   font-size: smaller;
-  position: absolute;
-  margin: 0;
-  top: 0;
-  left: 0;
 }
 header p a {
   font-style: italic;
 }
 
 h1 {
-  font-size: 3.2em;
-  margin-top: 0.5em;
+  font-size: 2em;
+  margin-top: 0.25em;
   margin-bottom: 0px;
 }
+
+@media (min-width: 1200px) {
+  h1 {
+    font-size: 3.2rem;
+  }
+  header p {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+  }
+  sp-station-event-map {
+    height: 500px;
+    width: 300px;
+    position: sticky;
+    top: 30px;
+  }
+}
+
 header  {
   margin: 0 auto;
   text-align: center;
@@ -43,6 +58,14 @@ header  {
   position: static;
 }
 
+article.help p {
+  text-align: start;
+  font-weight: normal;
+}
+article.help h5 {
+  text-align: start;
+  font-weight: bold;
+}
 sp-timerange {
   padding-bottom: 0.6em;
   display: block;
@@ -50,7 +73,6 @@ sp-timerange {
 sp-station-event-map {
   height: 500px;
   width: 300px;
-  position: sticky;
   top: 30px;
 }
 sp-seismograph {
@@ -59,6 +81,12 @@ sp-seismograph {
 }
 sp-helicorder {
   margin-top: 0.6em;
+}
+sp-organized-display {
+  text-align: start;
+}
+.helichannel {
+  text-align: start;
 }
 
 div.maptable {
