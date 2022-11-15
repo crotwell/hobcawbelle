@@ -1,7 +1,7 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
-import {clearContent, loadChannels} from './util';
+import {clearContent, loadChannels, clearMessage, setMessage} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 
@@ -10,6 +10,7 @@ const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 export function do_seismograph(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
+  setMessage("Loading seismograms...");
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
   if (pageState.window) {
     // update times without trigger notify
@@ -23,10 +24,13 @@ export function do_seismograph(pageState: PageState) {
     });
   }
   div.appendChild(timeChooser);
-  let graph = new spjs.displayorganize.OrganizedDisplay();
+  let graph = new spjs.organizeddisplay.OrganizedDisplay();
   div.appendChild(graph);
   loadSeismoData(pageState).then(sddList => {
-    timeChooser.updateTimeRange(pageState.window);
+    if (pageState.window) {
+      // update times without trigger notify
+      timeChooser.updateTimeRange(pageState.window);
+    }
     const in_graph = document.querySelector("sp-organized-display");
     in_graph.seisData = sddList;
   });
@@ -63,8 +67,12 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
       });
       return minMaxQ.loadSeismograms(sddList);
     } else {
-      let timeWindow = pageState.window ? pageState.window : spjs.util.durationEnd(300, "now");
-      pageState.window = timeWindow;
+      let timeWindow;
+      if (pageState.window) {
+        timeWindow = pageState.window;
+      } else {
+        timeWindow = spjs.util.durationEnd(300, "now");
+      }
       let sddList = [];
       chanList
       .filter(c => c.timeRange.overlaps(timeWindow))
@@ -74,5 +82,8 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
       });
       return minMaxQ.loadSeismograms(sddList);
     }
+  }).then(sddList => {
+    clearMessage();
+    return sddList;
   });
 }

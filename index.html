@@ -8,10 +8,11 @@
   <body>
     <header>
       <div class="topbanner">
-        <p>
+        <p class="spjs">
           Created with <a href="https://github.com/crotwell/seisplotjs">SeisPlotJS <span id="spjsversion"></span>.</a>
         </p>
         <h1>Junkyard Seismology</h1>
+        <p id="message"></p>
       </div>
       <nav class="card">
         <button id="earthquakes" type="button">Earthquakes</button>
@@ -20,6 +21,7 @@
         <button id="realtime" type="button">Realtime</button>
         <button id="help" type="button">Help?</button>
       </nav>
+      <div id="message"></div>
     </header>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>

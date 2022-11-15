@@ -1,7 +1,7 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
-import {clearContent, loadChannels} from './util';
+import {clearContent, loadChannels, clearMessage, setMessage} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Quake = seisplotjs.quakeml.Quake;
@@ -35,8 +35,10 @@ export function do_earthquakes(pageState: PageState) {
   innerDiv.appendChild(quakeTable);
   setupSelectable(quakeTable, quakeMap, pageState);
   if (pageState.quakeList.length === 0 || pageState.channelList.length === 0) {
+    setMessage("Loading earthquakes...");
     Promise.all([loadChannels(pageState), loadEarthquakes(pageState)])
     .then(([chanList, quakeList]) => {
+      clearMessage();
       pageState.quakeList = quakeList;
       pageState.selectedQuakeList = [];
       pageState.channelList = chanList;
@@ -51,7 +53,6 @@ export function do_earthquakes(pageState: PageState) {
       quakeMap.draw();
       quakeTable.quakeList = quakeList;
       quakeTable.draw();
-      doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
     });
   } else {
     quakeTable.quakeList = pageState.quakeList;

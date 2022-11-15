@@ -32,11 +32,17 @@ h1 {
   h1 {
     font-size: 3.2rem;
   }
-  header p {
+  header p.spjs {
     position: absolute;
     margin: 0;
     top: 0;
     left: 0;
+  }
+  header #message {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    right: 0;
   }
   sp-station-event-map {
     height: 500px;
@@ -50,7 +56,9 @@ header  {
   margin: 0 auto;
   text-align: center;
 }
-
+#message {
+  font-size: smaller;
+}
 #content {
   min-height: 500px;
   height: 85%;

@@ -35,3 +35,12 @@ export function clearContent(div: HTMLDivElement) {
     div.removeChild(div.lastChild);
   }
 }
+
+export function clearMessage() {
+  setMessage("");
+}
+
+export function setMessage(m: string) {
+  let msgP = document.querySelector<HTMLPElement>('#message');
+  msgP.textContent = m;
+}

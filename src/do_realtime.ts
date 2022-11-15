@@ -3,7 +3,7 @@ import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
 
 import { do_seismograph } from './do_seismograph'
-import {clearContent} from './util';
+import {clearContent, clearMessage, setMessage} from './util';
 import type {PageState} from './util';
 
 const DEFAULT_DURATION = "P1D";
@@ -16,6 +16,7 @@ export function do_realtime(pageState: PageState) {
   let waiting = div.appendChild(document.createElement("p"));
   waiting.setAttribute("class", "waitingmessage");
   waiting.textContent = "Waiting on data to arrive...";
+  setMessage("Waiting on data to arrive...");
   let rtDiv = div.appendChild(document.createElement("div"));
   rtDiv.setAttribute("class", "realtime")
   console.log("realtime")
@@ -27,7 +28,7 @@ export function do_realtime(pageState: PageState) {
   seisPlotConfig.isYAxisNice = false;
   seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*duration.toMillis());
   seisPlotConfig.linkedTimeScale.duration = duration;
-  seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+  seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
   let graphList = new Map();
   let numPackets = 0;
   let paused = false;
@@ -49,6 +50,7 @@ export function do_realtime(pageState: PageState) {
     const div = document.querySelector<HTMLDivElement>('div.realtime');
     if (firstData) {
       firstData = false;
+      clearMessage();
       let p = document.querySelector("p.waitingmessage");
       if (p) {
         p.parentElement.removeChild(p);
@@ -71,6 +73,7 @@ export function do_realtime(pageState: PageState) {
           let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
           seisData.alignmentTime = seisplotjs.luxon.DateTime.utc();
           seisPlot = new seisplotjs.seismograph.Seismograph([seisData], seisPlotConfig);
+
           div.appendChild(seisPlot);
           graphList.set(codes, seisPlot);
         } else {
