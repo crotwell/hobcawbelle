@@ -56,7 +56,7 @@ export function do_earthquakes(pageState: PageState) {
       quakeMap.draw();
       quakeTable.quakeList = quakeList;
       quakeTable.draw();
-      doSelectQuake(quakeList[0], quakeTable, quakeMap, pageState);
+      //doSelectQuake(quakeList[0], quakeTable, quakeMap, pageState);
     });
   } else {
     quakeTable.quakeList = pageState.quakeList;
@@ -65,7 +65,9 @@ export function do_earthquakes(pageState: PageState) {
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
     quakeMap.draw();
-    doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
+    if (pageState.selectedQuakeList[0]) {
+      doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
+    }
   }
 }
 

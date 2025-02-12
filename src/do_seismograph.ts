@@ -12,6 +12,7 @@ export function do_seismograph(pageState: PageState) {
   clearContent(div);
   setMessage("Loading seismograms...");
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
+  timeChooser.setAttribute("prev-next", "true")
   if (pageState.window) {
     // update times without trigger notify
     timeChooser.updateTimeRange(pageState.window);
