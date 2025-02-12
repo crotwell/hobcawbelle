@@ -38,10 +38,11 @@ export function clearContent(div: HTMLDivElement) {
 }
 
 export function clearMessage() {
-  setMessage("");
+  let msgP = document.querySelector<HTMLDivElement>('#message');
+  msgP.innerHTML = ``;
 }
 
 export function setMessage(m: string) {
-  let msgP = document.querySelector<HTMLPElement>('#message');
-  msgP.textContent = m;
+  let msgP = document.querySelector<HTMLDivElement>('#message');
+  msgP.innerHTML = `<h5>${m}</h5>`;
 }

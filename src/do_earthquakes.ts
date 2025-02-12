@@ -13,6 +13,7 @@ const EQ_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
 
 
 export function do_earthquakes(pageState: PageState) {
+  clearMessage();
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   let innerDiv = document.createElement("div");

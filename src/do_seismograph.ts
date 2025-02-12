@@ -34,6 +34,11 @@ export function do_seismograph(pageState: PageState) {
     }
     const in_graph = document.querySelector("sp-organized-display");
     in_graph.seisData = sddList;
+    if (sddList.length > 0) {
+      clearMessage();
+    } else {
+      setMessage("No seismograms for earthquake...");
+    }
   });
 }
 

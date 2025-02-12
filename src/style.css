@@ -43,12 +43,6 @@ h1 {
     top: 0;
     left: 0;
   }
-  header #message {
-    position: absolute;
-    margin: 0;
-    top: 0;
-    right: 0;
-  }
   sp-station-quake-map {
     height: 500px;
     width: 300px;
@@ -61,8 +55,11 @@ header  {
   margin: 0 auto;
   text-align: center;
 }
-#message {
+#message h5 {
   font-size: smaller;
+  text-align: start;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 #content {
   min-height: 500px;

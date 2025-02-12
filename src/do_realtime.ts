@@ -14,12 +14,13 @@ export let minAnimationInterval = 100; // default to once a tenth of a second
 
 
 export function do_realtime(pageState: PageState) {
+  clearMessage();
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   let waiting = div.appendChild(document.createElement("p"));
   waiting.setAttribute("class", "waitingmessage");
   waiting.textContent = "Waiting on data to arrive...";
-  setMessage("Waiting on data to arrive...");
+  setMessage("Waiting on realtime data to arrive...");
   let realtimeDiv = div.appendChild(document.createElement("div"));
   realtimeDiv.setAttribute("class", "realtime")
   console.log("realtime")
