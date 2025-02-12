@@ -24,6 +24,7 @@ export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
     .channelCode(pageStatus.channelCodeList.join(","));
   return stationQuery.queryChannels().then(netList => {
     let allChans = Array.from(spjs.stationxml.allChannels(netList));
+    pageStatus.networkList = netList;
     pageStatus.channelList = allChans;
     return allChans;
   })

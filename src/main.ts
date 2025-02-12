@@ -18,14 +18,15 @@ let heliEnd = getHeliNowTime();
 let pageState: PageState = {
   window: null,
   network: "CO",
-  station: "JKYD",
+  station: "BELLE",
   location: "00",
   channelCodeList: ["HHZ", "HHN", "HHE", "HNZ", "HNN", "HNE"],
-  stationCodeList: ["JKYD", "BARN", "JSC"],
-  heliChannel: spjs.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_JKYD_00_H_H_Z"),
+  stationCodeList: ["BELLE"],
+  heliChannel: spjs.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_BELLE_00_H_N_Z"),
   heliWindow: spjs.util.durationEnd("P1D", heliEnd),
   datalink: null,
   quakeList: [],
+  networkList: [],
   channelList: [],
   selectedQuakeList: [],
 };
@@ -61,3 +62,4 @@ function setupButtons(pageState) {
 }
 
 setupButtons(pageState);
+do_earthquakes(pageState);

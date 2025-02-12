@@ -1,10 +1,13 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
+import {Interval, DateTime, Duration} from 'luxon';
+
 import {clearContent, loadChannels, clearMessage, setMessage} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Quake = seisplotjs.quakeml.Quake;
+
 
 const EQ_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
 
@@ -18,18 +21,18 @@ export function do_earthquakes(pageState: PageState) {
   let quakeTable = new spjs.infotable.QuakeTable();
   let quakeMap = new spjs.leafletutil.QuakeStationMap();
   quakeMap.setAttribute(spjs.leafletutil.TILE_TEMPLATE,
-    'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}'
+    'https://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}'
   );
   quakeMap.setAttribute(spjs.leafletutil.TILE_ATTRIBUTION,
-    'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+    'Tiles &copy; Esri, Garmin, GEBCO, NOAA NGDC, and other contributors'
   );
-  quakeMap.zoomLevel = 12;
+  quakeMap.zoomLevel = 11;
   if (pageState.channelList.length > 0) {
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
   } else {
-    quakeMap.centerLat = 34;
-    quakeMap.centerLon = -80.7;
+    quakeMap.centerLat = 33;
+    quakeMap.centerLon = -80.0;
   }
   innerDiv.appendChild(quakeMap);
   innerDiv.appendChild(quakeTable);
@@ -53,6 +56,7 @@ export function do_earthquakes(pageState: PageState) {
       quakeMap.draw();
       quakeTable.quakeList = quakeList;
       quakeTable.draw();
+      doSelectQuake(quakeList[0], quakeTable, quakeMap, pageState);
     });
   } else {
     quakeTable.quakeList = pageState.quakeList;
@@ -88,10 +92,15 @@ export function loadEarthquakes(pageState: PageState): Promise<Array<Quake>> {
     .then(rawXml => {
           return spjs.quakeml.parseQuakeML(rawXml);
     })
+    .then(eventParams => {
+      return eventParams.eventList;
+    })
     .then(quakeList => {
-      const start = spjs.util.isoToDateTime('2021-12-01T00:00:00Z');
-      return quakeList.filter(q => q.time > start)
-        .filter(q => q.latitude > 34 && q.latitude < 34.4 && q.longitude > -80.9 && q.longitude < -80.5);
+      console.log(`quakeList: ${quakeList}`)
+      const quakeDur = Duration.fromISO("P90D");
+      const start = DateTime.utc().minus(quakeDur);
+      return quakeList.filter(q => q.time > start);
+      //  .filter(q => q.latitude > 34 && q.latitude < 34.4 && q.longitude > -80.9 && q.longitude < -80.5);
     });
 }
 
