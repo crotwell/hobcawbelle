@@ -46,3 +46,23 @@ export function setMessage(m: string) {
   let msgP = document.querySelector<HTMLDivElement>('#message');
   msgP.innerHTML = `<h5>${m}</h5>`;
 }
+
+export function updateButtonSelection(buttonId: string) {
+  let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
+  eButton.classList.remove("selected");
+
+  let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
+  sButton.classList.remove("selected");
+
+  let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
+  heliButton.classList.remove("selected");
+
+  let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
+  rtButton.classList.remove("selected");
+
+  let helpButton = document.querySelector<HTMLButtonElement>('#help');
+  helpButton.classList.remove("selected");
+
+  let selectedButton = document.querySelector<HTMLButtonElement>(buttonId);
+  selectedButton.classList.add("selected");
+}

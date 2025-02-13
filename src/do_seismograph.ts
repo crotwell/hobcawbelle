@@ -1,7 +1,8 @@
 
 import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
-import {clearContent, loadChannels, clearMessage, setMessage} from './util';
+import {clearContent, loadChannels, clearMessage, setMessage,
+  updateButtonSelection } from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 
@@ -10,6 +11,7 @@ const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 export function do_seismograph(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
+  updateButtonSelection('#seismograph');
   setMessage("Loading seismograms...");
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
   timeChooser.setAttribute("prev-next", "true")

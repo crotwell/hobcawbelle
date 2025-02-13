@@ -34,26 +34,30 @@ let pageState: PageState = {
 
 
 function setupButtons(pageState) {
-  let ebutton = document.querySelector<HTMLButtonElement>('#earthquakes');
-  ebutton.addEventListener('click', () => {
+  let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
+  eButton.addEventListener('click', () => {
     do_earthquakes(pageState);
   });
+  eButton.classList.remove("selected");
 
-  let sbutton = document.querySelector<HTMLButtonElement>('#seismograph');
-  sbutton.addEventListener('click', () => {
+  let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
+  sButton.addEventListener('click', () => {
     do_seismograph(pageState);
   });
+  sButton.classList.remove("selected");
 
 
   let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
   heliButton.addEventListener('click', () => {
     do_helicorder(pageState);
   });
+  heliButton.classList.remove("selected");
 
   let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
   rtButton.addEventListener('click', () => {
     do_realtime(pageState);
   });
+  rtButton.classList.remove("selected");
 
   let helpButton = document.querySelector<HTMLButtonElement>('#help');
   helpButton.addEventListener('click', () => {

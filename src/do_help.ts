@@ -1,7 +1,8 @@
 
-import {clearContent, } from './util';
+import {clearContent, updateButtonSelection} from './util';
 
 export function do_help(pageState: PageState) {
+  updateButtonSelection('#help');
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   div.innerHTML = `

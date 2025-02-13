@@ -3,7 +3,8 @@ import * as seisplotjs from 'seisplotjs';
 const spjs = seisplotjs;
 import {Interval, DateTime, Duration} from 'luxon';
 
-import {clearContent, loadChannels, clearMessage, setMessage} from './util';
+import {clearContent, loadChannels, clearMessage, setMessage,
+  updateButtonSelection} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Quake = seisplotjs.quakeml.Quake;
@@ -14,6 +15,7 @@ const EQ_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
 
 export function do_earthquakes(pageState: PageState) {
   clearMessage();
+  updateButtonSelection('#earthquakes');
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   let innerDiv = document.createElement("div");

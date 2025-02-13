@@ -4,7 +4,7 @@ import {Interval, DateTime, Duration} from 'luxon';
 
 
 import { do_seismograph } from './do_seismograph'
-import {clearContent, clearMessage, setMessage} from './util';
+import {clearContent, clearMessage, setMessage, updateButtonSelection} from './util';
 import type {PageState} from './util';
 
 const DEFAULT_DURATION = "P1D";
@@ -15,6 +15,7 @@ export let minAnimationInterval = 100; // default to once a tenth of a second
 
 export function do_realtime(pageState: PageState) {
   clearMessage();
+  updateButtonSelection('#realtime');
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   let waiting = div.appendChild(document.createElement("p"));
