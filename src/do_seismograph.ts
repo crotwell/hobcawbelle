@@ -11,7 +11,7 @@ const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 export function do_seismograph(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
-  updateButtonSelection('#seismograph');
+  updateButtonSelection('#seismograph', pageState);
   setMessage("Loading seismograms...");
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
   timeChooser.setAttribute("prev-next", "true")

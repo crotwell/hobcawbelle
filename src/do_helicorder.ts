@@ -16,7 +16,7 @@ const MINMAX_URL = "https://eeyore.seis.sc.edu/minmax";
 
 export function do_helicorder(pageState: PageState) {
   clearMessage();
-  updateButtonSelection('#helicorder');
+  updateButtonSelection('#helicorder', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   setMessage("Loading helicorder...");

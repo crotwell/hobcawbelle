@@ -15,7 +15,7 @@ export let minAnimationInterval = 100; // default to once a tenth of a second
 
 export function do_realtime(pageState: PageState) {
   clearMessage();
-  updateButtonSelection('#realtime');
+  updateButtonSelection('#realtime', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
   clearContent(div);
   let waiting = div.appendChild(document.createElement("p"));
@@ -126,7 +126,17 @@ export function do_realtime(pageState: PageState) {
   // snip start datalink
   pageState.datalink = new sp.datalink.DataLinkConnection(
       "wss://eeyore.seis.sc.edu/ringserver/datalink",
-      packetHandler,
+      (packet) => {
+          if (firstData) {
+            firstData = false;
+            clearMessage();
+            let p = document.querySelector("p.waitingmessage");
+            if (p) {
+              p.parentElement.removeChild(p);
+            }
+          }
+          rtDisp.packetHandler(packet);
+        },
       errorFn);
 
   pageState.datalink.connect()
@@ -145,6 +155,10 @@ export function do_realtime(pageState: PageState) {
           console.log(`positionAfter response: ${response}`)
           return pageState.datalink.stream();
         });
+}
+
+export function stop_realtime(pageState: PageState) {
+  if (pageState?.datalink) {pageState.datalink.close();}
 }
 
 export function formDataLinkMatch(pageState: PageState) {

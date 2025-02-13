@@ -1,6 +1,8 @@
 import * as spjs from 'seisplotjs';
 
 export const DEF_WINDOW_SEC = 300;
+import { stop_realtime } from './do_realtime'
+
 
 export type PageState = {
   window: spjs.luxon.Interval | null,
@@ -47,12 +49,14 @@ export function setMessage(m: string) {
   msgP.innerHTML = `<h5>${m}</h5>`;
 }
 
-export function updateButtonSelection(buttonId: string) {
+export function updateButtonSelection(buttonId: string, pageState: PageState) {
   let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
   eButton.classList.remove("selected");
 
   let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
-  sButton.classList.remove("selected");
+  if (sButton) {
+    sButton.classList.remove("selected");
+  }
 
   let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
   heliButton.classList.remove("selected");
@@ -64,5 +68,11 @@ export function updateButtonSelection(buttonId: string) {
   helpButton.classList.remove("selected");
 
   let selectedButton = document.querySelector<HTMLButtonElement>(buttonId);
-  selectedButton.classList.add("selected");
+  if (selectedButton) {
+    selectedButton.classList.add("selected");
+  }
+
+  if (selectedButton !== '#realtime') {
+    stop_realtime(pageState);
+  }
 }

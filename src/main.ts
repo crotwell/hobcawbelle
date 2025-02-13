@@ -41,11 +41,12 @@ function setupButtons(pageState) {
   eButton.classList.remove("selected");
 
   let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
-  sButton.addEventListener('click', () => {
-    do_seismograph(pageState);
-  });
-  sButton.classList.remove("selected");
-
+  if (sButton) {
+    sButton.addEventListener('click', () => {
+      do_seismograph(pageState);
+    });
+    sButton.classList.remove("selected");
+  }
 
   let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
   heliButton.addEventListener('click', () => {
