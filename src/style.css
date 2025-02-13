@@ -13,6 +13,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+
+  --theme-palette-color-1: #74BDBA;
+  --theme-palette-color-2: #287E7A;
+  --theme-palette-color-3: #222;
+  --theme-palette-color-4: #DDB74B;
+  --theme-palette-color-5: #E9E6E2;
+  --theme-palette-color-6: #FEFCF9;
+  --theme-palette-color-7: #FEFCF9;
+  --theme-palette-color-8: #ffffff;
 }
 
 p.spjs {
@@ -106,7 +116,7 @@ div.maptable {
 }
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--theme-palette-color-2);
   text-decoration: inherit;
 }
 a:hover {
