@@ -62,4 +62,4 @@ function setupButtons(pageState) {
 }
 
 setupButtons(pageState);
-do_earthquakes(pageState);
+do_realtime(pageState);
