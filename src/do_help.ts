@@ -40,10 +40,7 @@ export function do_help(pageState: PageState) {
     The default is the vertical Z component at BELLE, but other channels, north and east,
     can be selected in the Channels toggle. Previous and Next move the helicorder
     backwards or forwards by 24 hours. Now puts the current time on the last
-    line while Today shows the current day, starting at 00:00 UTC. Start, duration
-    and end can be modified directly to for example create a helicorder that
-    covers only 1 hour, using 'PT1H'. Please be careful in choosing a display
-    covering much more than a few days as the volume of data may be very large.
+    line while Today shows the current day, starting at midnight. 
     </p>
     <h5>Realtime Seismograph</h5>
     <p>

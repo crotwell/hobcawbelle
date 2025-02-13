@@ -76,3 +76,13 @@ export function updateButtonSelection(buttonId: string, pageState: PageState) {
     stop_realtime(pageState);
   }
 }
+
+export function formatTimeToMin(datetime: DateTime): string {
+  return datetime.toLocal().toFormat('yyyy LLL dd HH:mm')
+}
+
+export const EASTERN_TIMEZONE = new spjs.luxon.IANAZone("America/New_York");
+
+export function formatTimeEastern(datetime: DateTime): string {
+  return datetime.setZone(EASTERN_TIMEZONE).toFormat('yyyy LLL dd HH:mm')
+}

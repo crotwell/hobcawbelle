@@ -4,7 +4,7 @@ const spjs = seisplotjs;
 
 import { do_seismograph } from './do_seismograph'
 import {clearContent, DEF_WINDOW_SEC, loadChannels, clearMessage, setMessage,
-  updateButtonSelection } from './util';
+  updateButtonSelection, formatTimeToMin } from './util';
 import type {PageState} from './util';
 
 const DEFAULT_DURATION = "P1D";
@@ -21,17 +21,24 @@ export function do_helicorder(pageState: PageState) {
   clearContent(div);
   setMessage("Loading helicorder...");
 
+  const fromToTime = document.createElement("h5");
+  fromToTime.classList.add("fromtotime");
+  fromToTime.textContent = `From  to `;
+  div.append(fromToTime);
   let timeChooser = new spjs.datechooser.TimeRangeChooser();
   timeChooser.end = pageState.heliWindow.end;
   timeChooser.start = pageState.heliWindow.start;
+  timeChooser.resyncValues(spjs.datechooser.DURATION_CHANGED);
   timeChooser.updateCallback = (interval) => {
     const in_heli = document.querySelector("sp-helicorder");
     in_heli.heliConfig.fixedTimeScale = interval
     pageState.heliWindow = interval;
+    fromToTime.textContent = `From ${formatTimeToMin(interval.start)} to ${formatTimeToMin(interval.end)}`;
     loadHeli(pageState).then(sddList => {
       in_heli.seisData = sddList;
     });
   }
+  timeChooser.classList.add("helicorder");
   div.appendChild(timeChooser);
   let timeDiv = div.appendChild(document.createElement("div"));
   timeDiv.innerHTML = `
@@ -60,6 +67,9 @@ export function do_helicorder(pageState: PageState) {
 
   const heliConfig = new HelicorderConfig(pageState.heliWindow);
   const heli = new spjs.helicorder.Helicorder([], heliConfig);
+
+  heli.heliConfig.yLabelRightTimeZone = spjs.luxon.IANAZone.create("America/New_York");
+  heli.heliConfig.yLabelTimeZone = heli.heliConfig.yLabelRightTimeZone;
   heli.addEventListener("heliclick", hEvent => {
       const centerTime = hEvent.detail.time;
       //const hwValue = document.querySelector("#clickinterval").value;
@@ -93,6 +103,10 @@ export function do_helicorder(pageState: PageState) {
   });
   loadHeli(pageState).then(sddList => {
     heli.seisData = sddList;
+    const startHeli = formatTimeToMin(pageState.heliWindow.start);
+    const endHeli = formatTimeToMin(pageState.heliWindow.end);
+    const zoneHeli = heli.heliConfig.yLabelTimeZone.offsetName(pageState.heliWindow.start.toMillis(), {format: "short"});
+    fromToTime.textContent = `From ${startHeli} to ${endHeli} ${zoneHeli}`;
   });
 }
 
@@ -139,6 +153,7 @@ export function initTimeButtons(pageState: PageState) {
   document.querySelector("button#loadNow")
   .addEventListener("click", function(d) {
     let trChooser = document.querySelector("sp-timerange");
+    trChooser.resyncValues(spjs.datechooser.DURATION_CHANGED);
     trChooser.duration = trChooser.duration;
     trChooser.end = getHeliNowTime();
   });
@@ -146,13 +161,15 @@ export function initTimeButtons(pageState: PageState) {
   document.querySelector("button#loadToday")
   .addEventListener("click", function(d) {
     let trChooser = document.querySelector("sp-timerange");
-    trChooser.duration = trChooser.duration;
-    trChooser.end = spjs.luxon.DateTime.utc().endOf('day').plus({millisecond: 1});
+    trChooser.resyncValues(spjs.datechooser.DURATION_CHANGED);
+    trChooser.end = spjs.luxon.DateTime.now().endOf('day').plus({millisecond: 1});
+    trChooser.duration = spjs.luxon.Duration.fromISO("P1D");
   });
 
   document.querySelector("button#loadPrev")
   .addEventListener("click", function(d) {
     let trChooser = document.querySelector("sp-timerange");
+    trChooser.resyncValues(spjs.datechooser.DURATION_CHANGED);
     trChooser.duration = trChooser.duration;
     trChooser.end = trChooser.start;
   });
@@ -160,6 +177,7 @@ export function initTimeButtons(pageState: PageState) {
   document.querySelector("button#loadNext")
   .addEventListener("click", function(d) {
     let trChooser = document.querySelector("sp-timerange");
+    trChooser.resyncValues(spjs.datechooser.DURATION_CHANGED);
     trChooser.duration = trChooser.duration;
     trChooser.start = trChooser.end;
   });

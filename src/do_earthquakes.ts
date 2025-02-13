@@ -4,7 +4,7 @@ const spjs = seisplotjs;
 import {Interval, DateTime, Duration} from 'luxon';
 
 import {clearContent, loadChannels, clearMessage, setMessage,
-  updateButtonSelection} from './util';
+  updateButtonSelection, EASTERN_TIMEZONE} from './util';
 import type {PageState} from './util';
 const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Quake = seisplotjs.quakeml.Quake;
@@ -21,7 +21,17 @@ export function do_earthquakes(pageState: PageState) {
   let innerDiv = document.createElement("div");
   innerDiv.setAttribute("class", "maptable");
   div.appendChild(innerDiv);
-  let quakeTable = new spjs.infotable.QuakeTable();
+  let colDefaultLabels = spjs.infotable.QuakeTable.createDefaultColumnLabels();
+  colDefaultLabels.delete(spjs.infotable.QUAKE_COLUMN.TIME);
+  let colLabels = new Map();
+  colLabels.set(spjs.infotable.QUAKE_COLUMN.LOCALTIME, "Time");
+  for (let k of colDefaultLabels.keys()) {
+    colLabels.set(k, colDefaultLabels.get(k));
+  }
+
+  colLabels.delete(spjs.infotable.QUAKE_COLUMN.MAGTYPE);
+  let quakeTable = new spjs.infotable.QuakeTable([], colLabels);
+  quakeTable.timeZone = EASTERN_TIMEZONE;
   let quakeMap = new spjs.leafletutil.QuakeStationMap();
   quakeMap.setAttribute(spjs.leafletutil.TILE_TEMPLATE,
     'https://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}'

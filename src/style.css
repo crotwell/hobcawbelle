@@ -108,6 +108,14 @@ sp-organized-display {
 .helichannel {
   text-align: start;
 }
+sp-timerange.helicorder {
+  display: none;
+}
+h5.fromtotime {
+  font-size: smaller;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 
 div.maptable {
   display: flex;
