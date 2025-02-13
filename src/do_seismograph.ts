@@ -37,7 +37,8 @@ export function do_seismograph(pageState: PageState) {
     if (sddList.length > 0) {
       clearMessage();
     } else {
-      setMessage("No seismograms for earthquake...");
+      console.log(`set no seis messages`)
+      setMessage(`No seismograms for this earthquake were recorded at ${pageState.station}.`);
     }
   });
 }
@@ -89,7 +90,6 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
       return minMaxQ.loadSeismograms(sddList);
     }
   }).then(sddList => {
-    clearMessage();
     return sddList;
   });
 }
