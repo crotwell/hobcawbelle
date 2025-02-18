@@ -12,8 +12,14 @@ const SeismogramDisplayData = sp.seismogram.SeismogramDisplayData;
 
 export let minAnimationInterval = 100; // default to once a tenth of a second
 
+let reconnectTimeout = null;
+
+let mostRecentPacket = null;
+
+let pageStateCache = null;
 
 export function do_realtime(pageState: PageState) {
+  pageStateCache = pageState;
   clearMessage();
   updateButtonSelection('#realtime', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
@@ -24,7 +30,6 @@ export function do_realtime(pageState: PageState) {
   setMessage("Waiting on realtime data to arrive...");
   let realtimeDiv = div.appendChild(document.createElement("div"));
   realtimeDiv.setAttribute("class", "realtime")
-  console.log("realtime")
   const matchPattern = formDataLinkMatch(pageState);
 
   const rtConfig = {
@@ -70,8 +75,7 @@ export function do_realtime(pageState: PageState) {
 
 
 
-
-  let graphList = new Map();
+  let firstData = true;
   let numPackets = 0;
   let paused = false;
   let stopped = true;
@@ -80,50 +84,10 @@ export function do_realtime(pageState: PageState) {
 
   const errorFn = function(error) {
     console.assert(false, error);
+    setMessage(`Error: ${error}`);
     if (pageState.datalink) {pageState.datalink.close();}
-    document.querySelector("p#error").textContent = `Error: ${error}`;
   };
 
-  let firstData = true;
-  const packetHandler = function(packet) {
-    const div = document.querySelector<HTMLDivElement>('div.realtime');
-    if (firstData) {
-      firstData = false;
-      clearMessage();
-      let p = document.querySelector("p.waitingmessage");
-      if (p) {
-        p.parentElement.removeChild(p);
-      }
-    }
-    if ( ! div && pageState.datalink) {
-      console.log("div not connected, closing datalink")
-      pageState.datalink.endStream();
-      pageState.datalink.close();
-      pageState.datalink = null;
-      return;
-    }
-    if (packet.isMiniseed()) {
-      numPackets++;
-      let seisSegment = sp.miniseed.createSeismogramSegment(packet.asMiniseed());
-      const codes = seisSegment.codes();
-      let seisPlot = graphList.get(codes);
-      if ( ! seisPlot) {
-          let seismogram = new sp.seismogram.Seismogram( [ seisSegment ]);
-          let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-          seisData.alignmentTime = sp.luxon.DateTime.utc();
-          seisPlot = new sp.seismograph.Seismograph([seisData], seisPlotConfig);
-
-          div.appendChild(seisPlot);
-          graphList.set(codes, seisPlot);
-        } else {
-          seisPlot.seisData[0].append(seisSegment);
-          seisPlot.recheckAmpScaleDomain();
-        }
-        seisPlot.draw();
-    } else {
-      console.log(`not a mseed packet: ${packet.streamId}`)
-    }
-  };
   // snip start datalink
   pageState.datalink = new sp.datalink.DataLinkConnection(
       "wss://eeyore.seis.sc.edu/ringserver/datalink",
@@ -136,6 +100,7 @@ export function do_realtime(pageState: PageState) {
               p.parentElement.removeChild(p);
             }
           }
+          mostRecentPacket = packet;
           rtDisp.packetHandler(packet);
         },
       errorFn);
@@ -156,9 +121,28 @@ export function do_realtime(pageState: PageState) {
           console.log(`positionAfter response: ${response}`)
           return pageState.datalink.stream();
         });
+
+  createReconnectTimeout(pageState);
 }
 
+const RECONNECT_TIMEOUT_SEC = 10;
+
+function createReconnectTimeout(pageState: PageState) {
+  reconnectTimeout = setTimeout(() => {
+    if (mostRecentPacket == null ||
+      mostRecentPacket.packetEnd.toMillis() < DateTime.utc().toMillis()-3*1000*RECONNECT_TIMEOUT_SEC) {
+        if (document.hidden) {
+          if (pageState?.datalink) { pageState.datalink.close();}
+        } else {
+          do_realtime(pageState);
+        }
+      }
+  }, RECONNECT_TIMEOUT_SEC*1000);
+}
+
+
 export function stop_realtime(pageState: PageState) {
+  if (reconnectTimeout) {clearTimeout(reconnectTimeout);}
   if (pageState?.datalink) {pageState.datalink.close();}
 }
 
@@ -166,3 +150,13 @@ export function formDataLinkMatch(pageState: PageState) {
   let chanRE = `(${pageState.channelCodeList.join("|")})`;
   return `${pageState.network}_${pageState.station}_${pageState.location}_${chanRE}/MSEED`
 }
+
+function visibilitychangeListener() {
+  if (document.hidden) {
+    if (pageStateCache?.datalink) { pageStateCache.datalink.close();}
+  } else {
+    do_realtime(pageStateCache);
+  }
+}
+// only do this once at page load, not every time reset to realtime
+document.addEventListener("visibilitychange", visibilitychangeListener);
