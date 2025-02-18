@@ -1,12 +1,13 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { do_earthquakes } from './do_earthquakes'
-import { do_helicorder, getHeliNowTime } from './do_helicorder'
-import { do_realtime } from './do_realtime'
-import { do_seismograph } from './do_seismograph'
-import { do_help } from './do_help'
-import type { PageState } from './util'
-import * as spjs from 'seisplotjs'
+import './style.css';
+import typescriptLogo from './typescript.svg';
+import { do_earthquakes } from './do_earthquakes';
+import { do_helicorder, getHeliNowTime } from './do_helicorder';
+import { do_realtime } from './do_realtime';
+import { do_seismograph } from './do_seismograph';
+import { do_help } from './do_help';
+import {loadChannels} from './util';
+import type { PageState } from './util';
+import * as spjs from 'seisplotjs';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="content">
@@ -67,4 +68,6 @@ function setupButtons(pageState) {
 }
 
 setupButtons(pageState);
-do_realtime(pageState);
+loadChannels(pageState).then( () => {
+  do_realtime(pageState);
+});
