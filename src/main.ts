@@ -35,6 +35,19 @@ let pageState: PageState = {
 
 
 function setupButtons(pageState) {
+
+  let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
+  rtButton.addEventListener('click', () => {
+    do_realtime(pageState);
+  });
+  rtButton.classList.remove("selected");
+
+  let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
+  heliButton.addEventListener('click', () => {
+    do_helicorder(pageState);
+  });
+  heliButton.classList.remove("selected");
+
   let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
   eButton.addEventListener('click', () => {
     do_earthquakes(pageState);
@@ -48,18 +61,6 @@ function setupButtons(pageState) {
     });
     sButton.classList.remove("selected");
   }
-
-  let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
-  heliButton.addEventListener('click', () => {
-    do_helicorder(pageState);
-  });
-  heliButton.classList.remove("selected");
-
-  let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
-  rtButton.addEventListener('click', () => {
-    do_realtime(pageState);
-  });
-  rtButton.classList.remove("selected");
 
   let helpButton = document.querySelector<HTMLButtonElement>('#help');
   helpButton.addEventListener('click', () => {
