@@ -1,40 +1,41 @@
 
-import * as seisplotjs from 'seisplotjs';
-const spjs = seisplotjs;
+import * as sp from 'seisplotjs';
+import {Interval} from 'luxon';
 import {clearContent, loadChannels, clearMessage, setMessage,
   updateButtonSelection } from './util';
 import type {PageState} from './util';
-const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
+const SeismogramDisplayData = sp.seismogram.SeismogramDisplayData;
 
 const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 
 export function do_seismograph(pageState: PageState) {
   let div = document.querySelector<HTMLDivElement>('#content');
+  if (!div) { return; }
   clearContent(div);
   updateButtonSelection('#seismograph', pageState);
   setMessage("Loading seismograms...");
-  let timeChooser = new spjs.datechooser.TimeRangeChooser();
+  let timeChooser = new sp.datechooser.TimeRangeChooser();
   timeChooser.setAttribute("prev-next", "true")
   if (pageState.window) {
     // update times without trigger notify
     timeChooser.updateTimeRange(pageState.window);
   }
-  timeChooser.updateCallback = (interval) => {
-    const in_graph = document.querySelector("sp-organized-display");
+  timeChooser.updateCallback = (interval: Interval) => {
+    const in_graph = document.querySelector("sp-organized-display") as sp.organizeddisplay.OrganizedDisplay;
     pageState.window = interval;
     loadSeismoData(pageState).then(sddList => {
       in_graph.seisData = sddList;
     });
   }
   div.appendChild(timeChooser);
-  let graph = new spjs.organizeddisplay.OrganizedDisplay();
+  let graph = new sp.organizeddisplay.OrganizedDisplay();
   div.appendChild(graph);
   loadSeismoData(pageState).then(sddList => {
     if (pageState.window) {
       // update times without trigger notify
       timeChooser.updateTimeRange(pageState.window);
     }
-    const in_graph = document.querySelector("sp-organized-display");
+    const in_graph = document.querySelector("sp-organized-display") as sp.organizeddisplay.OrganizedDisplay;
     in_graph.seisData = sddList;
     if (sddList.length > 0) {
       clearMessage();
@@ -46,8 +47,8 @@ export function do_seismograph(pageState: PageState) {
 }
 
 
-export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayData> {
-  let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
+export function loadSeismoData(pageState: PageState): Promise<sp.seismogram.SeismogramDisplayData> {
+  let minMaxQ = new sp.mseedarchive.MSeedArchive(
     MSEED_URL, "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
   let chanPromise;
   if (pageState.channelList.length === 0) {
@@ -57,11 +58,11 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
   }
   return chanPromise.then(chanList => {
     if (pageState.selectedQuakeList.length > 0) {
-      let sddList = [];
-      const preDur = spjs.luxon.Duration.fromISO("PT30S");
-      const postDur = spjs.luxon.Duration.fromISO("PT60S");
+      let sddList: Array<sp.seismogram.SeismogramDisplayData> = [];
+      const preDur = sp.luxon.Duration.fromISO("PT30S");
+      const postDur = sp.luxon.Duration.fromISO("PT60S");
       pageState.selectedQuakeList.forEach(q => {
-        let timeWindow = spjs.luxon.Interval.fromDateTimes(q.time.minus(preDur),
+        let timeWindow = sp.luxon.Interval.fromDateTimes(q.time.minus(preDur),
                                                 q.time.plus(postDur));
         pageState.window = timeWindow;
         chanList
@@ -69,8 +70,8 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
         .forEach(c => {
           let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
           sdd.addQuake(q);
-          sdd.addMarkers(spjs.seismograph.createMarkerForOriginTime(q));
-          sdd.addMarkers(spjs.seismograph.createMarkerForPicks(q.preferredOrigin, c));
+          sdd.addMarkers(sp.seismograph.createMarkerForOriginTime(q));
+          sdd.addMarkers(sp.seismograph.createMarkerForPicks(q.preferredOrigin, c));
           sddList.push(sdd);
         });
       });
@@ -80,9 +81,9 @@ export function loadSeismoData(pageState: PageState): Promise<SeismogramDisplayD
       if (pageState.window) {
         timeWindow = pageState.window;
       } else {
-        timeWindow = spjs.util.durationEnd(300, "now");
+        timeWindow = sp.util.durationEnd(300, "now");
       }
-      let sddList = [];
+      let sddList: Array<sp.seismogram.SeismogramDisplayData> = [];
       chanList
       .filter(c => c.timeRange.overlaps(timeWindow))
       .forEach(c => {

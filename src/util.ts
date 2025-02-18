@@ -1,5 +1,8 @@
-import * as sp from 'seisplotjs';
 
+/// <reference types="vite/client" />
+
+import * as sp from 'seisplotjs';
+import {DateTime, Interval} from 'luxon';
 export const DEF_WINDOW_SEC = 300;
 import { stop_realtime } from './do_realtime'
 
@@ -11,20 +14,23 @@ export type PageState = {
   location: string,
   channelCodeList: Array<string>,
   stationCodeList: Array<string>,
-  heliChannel: FDSNSourceId,
-  heliWindow: sp.luxon.Interval,
+  heliChannel: sp.fdsnsourceid.FDSNSourceId,
+  heliWindow: Interval,
   datalink: sp.datalink.DataLinkConnection | null,
-  quakeList: Array<Quake>,
-  channelList: Array<Channel>,
+  quakeList: Array<sp.quakeml.Quake>,
+  networkList: Array<sp.stationxml.Network>,
+  channelList: Array<sp.stationxml.Channel>,
+  selectedQuakeList: Array<sp.quakeml.Quake>,
 };
 
-export function loadChannelsFDSN(pageStatus: PageState): Promise<Array<Channel>> {
+export function loadChannelsFDSN(pageStatus: PageState): Promise<Array<sp.stationxml.Channel>> {
   let stationQuery = new sp.fdsnstation.StationQuery()
     .networkCode(pageStatus.network)
     .stationCode(pageStatus.stationCodeList.join(","))
     .locationCode(pageStatus.location)
     .channelCode(pageStatus.channelCodeList.join(","));
-  return stationQuery.queryChannels().then(netList => {
+  return stationQuery.queryChannels()
+  .then((netList: Array<sp.stationxml.Network>) => {
     let allChans = Array.from(sp.stationxml.allChannels(netList));
     pageStatus.networkList = netList;
     pageStatus.channelList = allChans;
@@ -34,8 +40,9 @@ export function loadChannelsFDSN(pageStatus: PageState): Promise<Array<Channel>>
 
 import belleStationxmlUrl from './belle_stationxml.xml?url';
 
-export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
-  return sp.stationxml.fetchStationXml(belleStationxmlUrl).then(netList => {
+export function loadChannels(pageStatus: PageState): Promise<Array<sp.stationxml.Channel>> {
+  return sp.stationxml.fetchStationXml(belleStationxmlUrl)
+  .then((netList: Array<sp.stationxml.Network>) => {
     let allChans = Array.from(sp.stationxml.allChannels(netList));
     pageStatus.networkList = netList;
     pageStatus.channelList = allChans;
@@ -43,8 +50,8 @@ export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
   });
 }
 
-export function clearContent(div: HTMLDivElement) {
-  while(div.firstChild) {
+export function clearContent(div: HTMLDivElement | null) {
+  while(div?.firstChild) {
     // @ts-ignore
     div.removeChild(div.lastChild);
   }
@@ -52,17 +59,21 @@ export function clearContent(div: HTMLDivElement) {
 
 export function clearMessage() {
   let msgP = document.querySelector<HTMLDivElement>('#message');
-  msgP.innerHTML = ``;
+  if (msgP) {
+    msgP.innerHTML = ``;
+  }
 }
 
 export function setMessage(m: string) {
   let msgP = document.querySelector<HTMLDivElement>('#message');
-  msgP.innerHTML = `<h5>${m}</h5>`;
+  if (msgP) {
+    msgP.innerHTML = `<h5>${m}</h5>`;
+  }
 }
 
 export function updateButtonSelection(buttonId: string, pageState: PageState) {
   let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
-  eButton.classList.remove("selected");
+  eButton?.classList.remove("selected");
 
   let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
   if (sButton) {
@@ -70,25 +81,26 @@ export function updateButtonSelection(buttonId: string, pageState: PageState) {
   }
 
   let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
-  heliButton.classList.remove("selected");
+  heliButton?.classList.remove("selected");
 
   let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
-  rtButton.classList.remove("selected");
+  rtButton?.classList.remove("selected");
 
   let helpButton = document.querySelector<HTMLButtonElement>('#help');
-  helpButton.classList.remove("selected");
+  helpButton?.classList.remove("selected");
 
   let selectedButton = document.querySelector<HTMLButtonElement>(buttonId);
   if (selectedButton) {
     selectedButton.classList.add("selected");
   }
 
-  if (selectedButton !== '#realtime') {
+  if (buttonId !== '#realtime') {
     stop_realtime(pageState);
   }
 }
 
-export function formatTimeToMin(datetime: DateTime): string {
+export function formatTimeToMin(datetime: DateTime | null): string {
+  if (datetime == null) { return "";}
   return datetime.toLocal().toFormat('yyyy LLL dd HH:mm')
 }
 

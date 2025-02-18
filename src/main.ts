@@ -1,5 +1,4 @@
 import './style.css';
-import typescriptLogo from './typescript.svg';
 import { do_earthquakes } from './do_earthquakes';
 import { do_helicorder, getHeliNowTime } from './do_helicorder';
 import { do_realtime } from './do_realtime';
@@ -7,15 +6,16 @@ import { do_seismograph } from './do_seismograph';
 import { do_help } from './do_help';
 import {loadChannels} from './util';
 import type { PageState } from './util';
-import * as spjs from 'seisplotjs';
+import * as sp from 'seisplotjs';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="content">
     </div>
 `
-console.log(`SeisPlotJS: ${spjs.version}`)
-document.querySelector<HTMLSpanElement>('#spjsversion')!.innerHTML = spjs.version;
+console.log(`SeisPlotJS: ${sp.version}`)
+document.querySelector<HTMLSpanElement>('#spversion')!.innerHTML = sp.version;
 let heliEnd = getHeliNowTime();
+
 let pageState: PageState = {
   window: null,
   network: "CO",
@@ -23,8 +23,8 @@ let pageState: PageState = {
   location: "00",
   channelCodeList: ["HHZ", "HHN", "HHE", "HNZ", "HNN", "HNE"],
   stationCodeList: ["BELLE"],
-  heliChannel: spjs.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_BELLE_00_H_N_Z"),
-  heliWindow: spjs.util.durationEnd("P1D", heliEnd),
+  heliChannel: sp.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_BELLE_00_H_N_Z"),
+  heliWindow: sp.util.durationEnd("P1D", heliEnd),
   datalink: null,
   quakeList: [],
   networkList: [],
@@ -33,26 +33,31 @@ let pageState: PageState = {
 };
 
 
-
-function setupButtons(pageState) {
+function setupButtons(pageState: PageState) {
 
   let rtButton = document.querySelector<HTMLButtonElement>('#realtime');
-  rtButton.addEventListener('click', () => {
-    do_realtime(pageState);
-  });
-  rtButton.classList.remove("selected");
+  if (rtButton) {
+    rtButton.addEventListener('click', () => {
+      do_realtime(pageState);
+    });
+    rtButton.classList.remove("selected");
+  }
 
   let heliButton = document.querySelector<HTMLButtonElement>('#helicorder');
-  heliButton.addEventListener('click', () => {
-    do_helicorder(pageState);
-  });
-  heliButton.classList.remove("selected");
+  if (heliButton) {
+    heliButton.addEventListener('click', () => {
+      do_helicorder(pageState);
+    });
+    heliButton.classList.remove("selected");
+  }
 
   let eButton = document.querySelector<HTMLButtonElement>('#earthquakes');
-  eButton.addEventListener('click', () => {
-    do_earthquakes(pageState);
-  });
-  eButton.classList.remove("selected");
+  if (eButton) {
+    eButton.addEventListener('click', () => {
+      do_earthquakes(pageState);
+    });
+    eButton.classList.remove("selected");
+  }
 
   let sButton = document.querySelector<HTMLButtonElement>('#seismograph');
   if (sButton) {
@@ -63,9 +68,11 @@ function setupButtons(pageState) {
   }
 
   let helpButton = document.querySelector<HTMLButtonElement>('#help');
-  helpButton.addEventListener('click', () => {
-    do_help(pageState);
-  });
+  if (helpButton) {
+    helpButton.addEventListener('click', () => {
+      do_help(pageState);
+    });
+  }
 }
 
 setupButtons(pageState);

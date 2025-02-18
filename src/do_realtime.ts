@@ -1,28 +1,25 @@
 
 import * as sp from 'seisplotjs';
-import {Interval, DateTime, Duration} from 'luxon';
+import { DateTime, Duration} from 'luxon';
 
 
-import { do_seismograph } from './do_seismograph'
 import {clearContent, clearMessage, setMessage, updateButtonSelection} from './util';
 import type {PageState} from './util';
 
-const DEFAULT_DURATION = "P1D";
-const SeismogramDisplayData = sp.seismogram.SeismogramDisplayData;
-
 export let minAnimationInterval = 100; // default to once a tenth of a second
 
-let reconnectTimeout = null;
+let reconnectTimeout: null | number = null;
 
-let mostRecentPacket = null;
+let mostRecentPacket: null | sp.datalink.DataLinkPacket = null;
 
-let pageStateCache = null;
+let pageStateCache: PageState;
 
 export function do_realtime(pageState: PageState) {
   pageStateCache = pageState;
   clearMessage();
   updateButtonSelection('#realtime', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
+  if (div == null) { return; }
   clearContent(div);
   let waiting = div.appendChild(document.createElement("p"));
   waiting.setAttribute("class", "waitingmessage");
@@ -76,13 +73,8 @@ export function do_realtime(pageState: PageState) {
 
 
   let firstData = true;
-  let numPackets = 0;
-  let paused = false;
-  let stopped = true;
-  let redrawInProgress = false;
-  let rect = div.getBoundingClientRect();
 
-  const errorFn = function(error) {
+  const errorFn = function(error: Error) {
     console.assert(false, error);
     setMessage(`Error: ${error}`);
     if (pageState.datalink) {pageState.datalink.close();}
@@ -91,13 +83,13 @@ export function do_realtime(pageState: PageState) {
   // snip start datalink
   pageState.datalink = new sp.datalink.DataLinkConnection(
       "wss://eeyore.seis.sc.edu/ringserver/datalink",
-      (packet) => {
+      (packet: sp.datalink.DataLinkPacket) => {
           if (firstData) {
             firstData = false;
             clearMessage();
             let p = document.querySelector("p.waitingmessage");
             if (p) {
-              p.parentElement.removeChild(p);
+              p.parentElement?.removeChild(p);
             }
           }
           mostRecentPacket = packet;
@@ -106,18 +98,18 @@ export function do_realtime(pageState: PageState) {
       errorFn);
 
   pageState.datalink.connect()
-        .then(serverId => {
+        .then((serverId: string) => {
           console.log(`id response: ${serverId}`);
           console.log(`send match: ${matchPattern}`)
           return pageState.datalink.match(matchPattern);
-        }).then(response => {
+        }).then((response: sp.datalink.DataLinkResponse) => {
           console.log(`match response: ${response}`)
           if (response.isError()) {
             console.log(`response is not OK, ignore... ${response}`);
           }
           const displayStart = DateTime.utc().minus(rtConfig.duration);
           return pageState.datalink.positionAfter(displayStart);
-        }).then(response => {
+        }).then((response: sp.datalink.DataLinkResponse) => {
           console.log(`positionAfter response: ${response}`)
           return pageState.datalink.stream();
         });
@@ -133,6 +125,7 @@ function createReconnectTimeout(pageState: PageState) {
       mostRecentPacket.packetEnd.toMillis() < DateTime.utc().toMillis()-3*1000*RECONNECT_TIMEOUT_SEC) {
         if (document.hidden) {
           if (pageState?.datalink) { pageState.datalink.close();}
+          createReconnectTimeout(pageState);
         } else {
           do_realtime(pageState);
         }

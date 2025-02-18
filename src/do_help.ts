@@ -1,9 +1,10 @@
 
-import {clearContent, updateButtonSelection} from './util';
+import {clearContent, updateButtonSelection, PageState} from './util';
 
 export function do_help(pageState: PageState) {
   updateButtonSelection('#help', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
+  if (div == null) {return;}
   clearContent(div);
   div.innerHTML = `
   <article class="help">
@@ -40,7 +41,7 @@ export function do_help(pageState: PageState) {
     The default is the vertical Z component at BELLE, but other channels, north and east,
     can be selected in the Channels toggle. Previous and Next move the helicorder
     backwards or forwards by 24 hours. Now puts the current time on the last
-    line while Today shows the current day, starting at midnight. 
+    line while Today shows the current day, starting at midnight.
     </p>
     <h5>Realtime Seismograph</h5>
     <p>

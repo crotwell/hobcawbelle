@@ -1,14 +1,10 @@
 
-import * as seisplotjs from 'seisplotjs';
-const spjs = seisplotjs;
-import {Interval, DateTime, Duration} from 'luxon';
+import * as sp from 'seisplotjs';
+import { DateTime, Duration} from 'luxon';
 
 import {clearContent, loadChannels, clearMessage, setMessage,
   updateButtonSelection, EASTERN_TIMEZONE} from './util';
 import type {PageState} from './util';
-const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
-const Quake = seisplotjs.quakeml.Quake;
-
 
 const EQ_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
 
@@ -17,26 +13,27 @@ export function do_earthquakes(pageState: PageState) {
   clearMessage();
   updateButtonSelection('#earthquakes', pageState);
   let div = document.querySelector<HTMLDivElement>('#content');
+  if (div == null) { return; }
   clearContent(div);
   let innerDiv = document.createElement("div");
   innerDiv.setAttribute("class", "maptable");
   div.appendChild(innerDiv);
-  let colDefaultLabels = spjs.infotable.QuakeTable.createDefaultColumnLabels();
-  colDefaultLabels.delete(spjs.infotable.QUAKE_COLUMN.TIME);
+  let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
+  colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
   let colLabels = new Map();
-  colLabels.set(spjs.infotable.QUAKE_COLUMN.LOCALTIME, "Time");
+  colLabels.set(sp.infotable.QUAKE_COLUMN.LOCALTIME, "Time");
   for (let k of colDefaultLabels.keys()) {
     colLabels.set(k, colDefaultLabels.get(k));
   }
 
-  colLabels.delete(spjs.infotable.QUAKE_COLUMN.MAGTYPE);
-  let quakeTable = new spjs.infotable.QuakeTable([], colLabels);
+  colLabels.delete(sp.infotable.QUAKE_COLUMN.MAGTYPE);
+  let quakeTable = new sp.infotable.QuakeTable([], colLabels);
   quakeTable.timeZone = EASTERN_TIMEZONE;
-  let quakeMap = new spjs.leafletutil.QuakeStationMap();
-  quakeMap.setAttribute(spjs.leafletutil.TILE_TEMPLATE,
+  let quakeMap = new sp.leafletutil.QuakeStationMap();
+  quakeMap.setAttribute(sp.leafletutil.TILE_TEMPLATE,
     'https://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}'
   );
-  quakeMap.setAttribute(spjs.leafletutil.TILE_ATTRIBUTION,
+  quakeMap.setAttribute(sp.leafletutil.TILE_ATTRIBUTION,
     'Tiles &copy; Esri, Garmin, GEBCO, NOAA NGDC, and other contributors'
   );
   quakeMap.zoomLevel = 11;
@@ -61,7 +58,7 @@ export function do_earthquakes(pageState: PageState) {
       // draw in reversed order so recent is on top
       const reversedQuakeList = quakeList.slice().reverse();
       quakeMap.addQuake(reversedQuakeList);
-      quakeMap.addStation(spjs.stationxml.uniqueStations(chanList));
+      quakeMap.addStation(sp.stationxml.uniqueStations(chanList));
       if (chanList.length > 0) {
         quakeMap.centerLat = chanList[0].latitude;
         quakeMap.centerLon = chanList[0].longitude;
@@ -74,7 +71,7 @@ export function do_earthquakes(pageState: PageState) {
   } else {
     quakeTable.quakeList = pageState.quakeList;
     quakeMap.addQuake(pageState.quakeList);
-    quakeMap.addStation(spjs.stationxml.uniqueStations(pageState.channelList));
+    quakeMap.addStation(sp.stationxml.uniqueStations(pageState.channelList));
     quakeMap.centerLat = pageState.channelList[0].latitude;
     quakeMap.centerLon = pageState.channelList[0].longitude;
     quakeMap.draw();
@@ -85,42 +82,28 @@ export function do_earthquakes(pageState: PageState) {
 }
 
 
-export function loadEarthquakes(pageState: PageState): Promise<Array<Quake>> {
-  let fetchInit = spjs.util.defaultFetchInitObj(spjs.util.XML_MIME);
-  return spjs.util.doFetchWithTimeout(EQ_URL, fetchInit)
-    .then(response => {
-      if (response.status === 200) {
-        return response.text();
-      } else if (
-        response.status === 204 ||
-        (isDef(mythis._nodata) && response.status === mythis._nodata)
-      ) {
-        // 204 is nodata, so successful but empty
-        return spjs.fdsnevent.FAKE_EMPTY_XML;
-      } else {
-        throw new Error(`Status not successful: ${response.status}`);
-      }
-    })
-    .then(function (rawXmlText) {
-      return new DOMParser().parseFromString(rawXmlText, spjs.util.XML_MIME);
-    })
-    .then(rawXml => {
-          return spjs.quakeml.parseQuakeML(rawXml);
-    })
-    .then(eventParams => {
+export function loadEarthquakes(pageState: PageState): Promise<Array<sp.quakeml.Quake>> {
+  return sp.quakeml.fetchQuakeML(EQ_URL)
+    .then((eventParams: sp.quakeml.EventParameters) => {
       return eventParams.eventList;
     })
-    .then(quakeList => {
+    .then((quakeList: Array<sp.quakeml.Quake>) => {
       console.log(`quakeList: ${quakeList}`)
       const quakeDur = Duration.fromISO("P90D");
       const start = DateTime.utc().minus(quakeDur);
       return quakeList.filter(q => q.time > start);
       //  .filter(q => q.latitude > 34 && q.latitude < 34.4 && q.longitude > -80.9 && q.longitude < -80.5);
+    })
+    .then((quakeList: Array<sp.quakeml.Quake>) => {
+      pageState.quakeList = quakeList;
+      return quakeList;
     });
 }
 
 export const SELECTED_ROW = "selectedRow";
-export function setupSelectable(quakeTable, quakeMap, pageState: PageState) {
+export function setupSelectable(quakeTable: sp.infotable.QuakeTable,
+                                quakeMap: sp.leafletutil.QuakeStationMap,
+                                pageState: PageState) {
   quakeTable.addStyle(`
       td {
         padding-left: 5px;
@@ -131,22 +114,22 @@ export function setupSelectable(quakeTable, quakeMap, pageState: PageState) {
         color: white;
       }
     `);
-  quakeTable.addEventListener("quakeclick", ce => {
+  quakeTable.addEventListener("quakeclick", (ce: sp.quakeml.Quake) => {
     doSelectQuake(ce.detail.quake, quakeTable, quakeMap, pageState);
   });
-  quakeMap.addEventListener("quakeclick", ce => {
+  quakeMap.addEventListener("quakeclick", (ce: sp.quakeml.Quake) => {
     doSelectQuake(ce.detail.quake, quakeTable, quakeMap, pageState);
   });
-  quakeMap.addEventListener("stationclick", ce => {
+  quakeMap.addEventListener("stationclick", (ce: sp.quakeml.Quake) => {
     console.log(`stationclick: ${ce.detail.station}`);
   });
   if (pageState.selectedQuakeList.length > 0) {
     doSelectQuake(pageState.selectedQuakeList[0], quakeTable, quakeMap, pageState);
   }
 }
-export function doSelectQuake(quake: Quake,
-                              quakeTable: spjs.infotable.QuakeTable,
-                              quakeMap: spjs.leafletutil.StationEventMap,
+export function doSelectQuake(quake: sp.quakeml.Quake,
+                              quakeTable: sp.infotable.QuakeTable,
+                              quakeMap: sp.leafletutil.StationEventMap,
                               pageState: PageState) {
   let quakeRow = quakeTable.findRowForQuake(quake);
   if (!quakeRow) {
@@ -156,20 +139,20 @@ export function doSelectQuake(quake: Quake,
   if (idx !== -1) {
     // quake already in list, remove
     pageState.selectedQuakeList.splice(idx,1);
-    quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(quake));
+    quakeMap.removeColorClass(sp.leafletutil.cssClassForQuake(quake));
     if (quakeRow) {
       quakeRow.classList.remove(SELECTED_ROW);
     }
     return;
   } else {
     pageState.selectedQuakeList = [quake];
-    quakeMap.quakeList.forEach(q => {
-      quakeMap.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+    quakeMap.quakeList.forEach((q: sp.quakeml.Quake) => {
+      quakeMap.removeColorClass(sp.leafletutil.cssClassForQuake(q));
     });
-    quakeMap.colorClass(seisplotjs.leafletutil.cssClassForQuake(quake), "green");
+    quakeMap.colorClass(sp.leafletutil.cssClassForQuake(quake), "green");
     if (quakeRow) {
-      let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
-      allRows.forEach(r => {
+      let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
+      allRows.forEach((r: HTMLElement) => {
         r.classList.remove(SELECTED_ROW);
       });
       quakeRow.classList.add(SELECTED_ROW);
