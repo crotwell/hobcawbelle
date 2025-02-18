@@ -32,7 +32,8 @@ export function do_realtime(pageState: PageState) {
     alignmentTime: DateTime.utc(),
     offset: Duration.fromMillis(0),
     minRedrawMillis: 100,
-    networkList: pageState.networkList
+    networkList: pageState.networkList,
+    removeTrend: true
   };
 
   const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
