@@ -75,7 +75,42 @@ export function loadSeismoData(pageState: PageState): Promise<sp.seismogram.Seis
           sddList.push(sdd);
         });
       });
-      return minMaxQ.loadSeismograms(sddList);
+      return minMaxQ.loadSeismograms(sddList)
+      .then(sddList => {
+        if (pageState.filter) {
+          sddList.forEach(sdd => {
+            let butterworth = sp.filter.createButterworth(
+              2, // poles
+              pageState.filter.style,
+              pageState.filter.lowCorner, // low corner
+              pageState.filter.highCorner, // high corner
+              1 / sdd.seismogram.sampleRate, // delta (period)
+            );
+            let rmeanSeis = sp.filter.rMean(sdd.seismogram);
+            let filteredSeis = sp.filter.applyFilter(butterworth, rmeanSeis);
+            sdd.seismogram = filteredSeis;
+          });
+        }
+        return sddList;
+      })
+      .then(sddList => {
+        let promiseList = [];
+        sddList.forEach(sdd => {
+          const taupQuery = new sp.traveltime.TraveltimeQuery();
+          taupQuery.latLonFromQuake(sdd.quake);
+          taupQuery.latLonFromStation(sdd.channel.station);
+          promiseList.push(taupQuery.queryJson().then(ttimes => {
+            if (ttimes) {
+              sdd.addMarkers(sp.seismographmarker.createMarkersForTravelTimes(sdd.quake, ttimes));
+            } else {
+              console.log("no ttimes");
+            }
+          }));
+        })
+        return Promise.all(promiseList).then( () => { return sddList;});
+      }).then((sddList) => {
+        return sddList;
+      });
     } else {
       let timeWindow;
       if (pageState.window) {

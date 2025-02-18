@@ -6,6 +6,11 @@ import {DateTime, Interval} from 'luxon';
 export const DEF_WINDOW_SEC = 300;
 import { stop_realtime } from './do_realtime'
 
+export type FilterType = {
+  style: string,
+  lowCorner: number,
+  highCorner: number,
+}
 
 export type PageState = {
   window: sp.luxon.Interval | null,
@@ -21,6 +26,8 @@ export type PageState = {
   networkList: Array<sp.stationxml.Network>,
   channelList: Array<sp.stationxml.Channel>,
   selectedQuakeList: Array<sp.quakeml.Quake>,
+  filter: FilterType | null,
+  doSeismograph: boolean
 };
 
 export function loadChannelsFDSN(pageStatus: PageState): Promise<Array<sp.stationxml.Channel>> {

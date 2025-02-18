@@ -2,6 +2,7 @@
 import * as sp from 'seisplotjs';
 import { DateTime, Duration} from 'luxon';
 
+import {loadSeismoData} from './do_seismograph';
 import {clearContent, loadChannels, clearMessage, setMessage,
   updateButtonSelection, EASTERN_TIMEZONE} from './util';
 import type {PageState} from './util';
@@ -18,6 +19,12 @@ export function do_earthquakes(pageState: PageState) {
   let innerDiv = document.createElement("div");
   innerDiv.setAttribute("class", "maptable");
   div.appendChild(innerDiv);
+
+  let orgDisplay = new sp.organizeddisplay.OrganizedDisplay();
+  orgDisplay.setAttribute(sp.organizeddisplay.WITH_TOOLS, "false");
+  orgDisplay.tools = "false";
+  div.appendChild(orgDisplay);
+
   let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
   colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
   let colLabels = new Map();
@@ -156,6 +163,12 @@ export function doSelectQuake(quake: sp.quakeml.Quake,
         r.classList.remove(SELECTED_ROW);
       });
       quakeRow.classList.add(SELECTED_ROW);
+    }
+    if (pageState.doSeismograph) {
+      loadSeismoData(pageState).then(sddList => {
+        let orgDisplay = document.querySelector("sp-organized-display");
+        orgDisplay.seisData = sddList;
+      });
     }
   }
 }

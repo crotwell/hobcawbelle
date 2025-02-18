@@ -31,8 +31,17 @@ let pageState: PageState = {
   networkList: [],
   channelList: [],
   selectedQuakeList: [],
+  filter: null,
+  doSeismograph: false,
 };
-
+/*
+pageState.filter = {
+  style: sp.filter.BAND_PASS,
+  lowCorner: 1,
+  highCorner: 10
+};
+pageState.doSeismograph = true;
+*/
 
 function setupButtons(pageState: PageState) {
 
