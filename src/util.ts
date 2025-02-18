@@ -1,35 +1,46 @@
-import * as spjs from 'seisplotjs';
+import * as sp from 'seisplotjs';
 
 export const DEF_WINDOW_SEC = 300;
 import { stop_realtime } from './do_realtime'
 
 
 export type PageState = {
-  window: spjs.luxon.Interval | null,
+  window: sp.luxon.Interval | null,
   network: string,
   station: string,
   location: string,
   channelCodeList: Array<string>,
   stationCodeList: Array<string>,
   heliChannel: FDSNSourceId,
-  heliWindow: spjs.luxon.Interval,
-  datalink: spjs.datalink.DataLinkConnection | null,
+  heliWindow: sp.luxon.Interval,
+  datalink: sp.datalink.DataLinkConnection | null,
   quakeList: Array<Quake>,
   channelList: Array<Channel>,
 };
 
-export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
-  let stationQuery = new spjs.fdsnstation.StationQuery()
+export function loadChannelsFDSN(pageStatus: PageState): Promise<Array<Channel>> {
+  let stationQuery = new sp.fdsnstation.StationQuery()
     .networkCode(pageStatus.network)
     .stationCode(pageStatus.stationCodeList.join(","))
     .locationCode(pageStatus.location)
     .channelCode(pageStatus.channelCodeList.join(","));
   return stationQuery.queryChannels().then(netList => {
-    let allChans = Array.from(spjs.stationxml.allChannels(netList));
+    let allChans = Array.from(sp.stationxml.allChannels(netList));
     pageStatus.networkList = netList;
     pageStatus.channelList = allChans;
     return allChans;
-  })
+  });
+}
+
+import belleStationxmlUrl from './belle_stationxml.xml?url';
+
+export function loadChannels(pageStatus: PageState): Promise<Array<Channel>> {
+  return sp.stationxml.fetchStationXml(belleStationxmlUrl).then(netList => {
+    let allChans = Array.from(sp.stationxml.allChannels(netList));
+    pageStatus.networkList = netList;
+    pageStatus.channelList = allChans;
+    return allChans;
+  });
 }
 
 export function clearContent(div: HTMLDivElement) {
@@ -81,7 +92,7 @@ export function formatTimeToMin(datetime: DateTime): string {
   return datetime.toLocal().toFormat('yyyy LLL dd HH:mm')
 }
 
-export const EASTERN_TIMEZONE = new spjs.luxon.IANAZone("America/New_York");
+export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
 export function formatTimeEastern(datetime: DateTime): string {
   return datetime.setZone(EASTERN_TIMEZONE).toFormat('yyyy LLL dd HH:mm')

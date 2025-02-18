@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>IRIS-DMC</Source>
+  <Sender>IRIS-DMC</Sender>
+  <Module>IRIS WEB SERVICE: fdsnws-station | version: 1.1.52</Module>
+  <ModuleURI>https://service.iris.edu/fdsnws/station/1/query?net=CO&amp;sta=BELLE&amp;cha=HN?&amp;level=channel&amp;format=xml&amp;includecomments=true&amp;nodata=404</ModuleURI>
+  <Created>2025-02-18T02:39:38.2189</Created>
+  <Network code="CO" startDate="1987-01-01T00:00:00.0000" restrictedStatus="open">
+   <Description>South Carolina Seismic Network (SCSN)</Description>
+   <Identifier type="DOI">10.7914/SN/CO
+   </Identifier>
+   <TotalNumberStations>19</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="BELLE" startDate="2025-01-17T00:00:00.0000" restrictedStatus="open" iris:alternateNetworkCodes="_REALTIME,.UNRESTRICTED">
+    <Latitude>33.3349</Latitude>
+    <Longitude>-79.2446</Longitude>
+    <Elevation>2.37</Elevation>
+    <Site>
+     <Name>Hobcaw Barony</Name>
+     <Description>Hobcaw Barony, Georgetown SC</Description>
+     <Town>Georgetown</Town>
+     <Region>South Carolina</Region>
+     <Country>USA</Country>
+    </Site>
+    <TotalNumberChannels>9</TotalNumberChannels>
+    <SelectedNumberChannels>3</SelectedNumberChannels>
+    <Channel code="HNE" locationCode="00" startDate="2025-02-11T18:00:00.0000" restrictedStatus="open">
+     <Comment>
+      <Value>[INTERNAL-SENSOR::EPISENSOR ES-DECK::Etna-2-105336-I1], [LOGGER::ETNA-2::105336]</Value>
+      <BeginEffectiveTime>2025-02-11T18:00:00.0000</BeginEffectiveTime>
+     </Comment>
+     <Latitude>33.3349</Latitude>
+     <Longitude>-79.2446</Longitude>
+     <Elevation>1.9</Elevation>
+     <Depth>0.5</Depth>
+     <Azimuth>90</Azimuth>
+     <Dip>0</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>GEOPHYSICAL</Type>
+     <SampleRate>2E02</SampleRate>
+     <Sensor>
+      <Type>KINEMETRICS</Type>
+      <Description>Accelerometer</Description>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Model>EPISENSOR ES-DECK</Model>
+      <SerialNumber>Etna-2-105336-I1</SerialNumber>
+     </Sensor>
+     <DataLogger>
+      <Type>KINEMETRICS</Type>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Vendor>Kinemetrics</Vendor>
+      <Model>ETNA-2</Model>
+      <SerialNumber>105336</SerialNumber>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>855302.3694710516</Value>
+       <Frequency>1.0</Frequency>
+       <InputUnits>
+         <Name>m/s**2</Name>
+         <Description>Acceleration in meters per second squared</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>Digital Count in Digital counts</Description>
+       </OutputUnits>
+     </InstrumentSensitivity>
+     </Response>
+    </Channel>
+    <Channel code="HNN" locationCode="00" startDate="2025-02-11T18:00:00.0000" restrictedStatus="open">
+     <Comment>
+      <Value>[INTERNAL-SENSOR::EPISENSOR ES-DECK::Etna-2-105336-I1], [LOGGER::ETNA-2::105336]</Value>
+      <BeginEffectiveTime>2025-02-11T18:00:00.0000</BeginEffectiveTime>
+     </Comment>
+     <Latitude>33.3349</Latitude>
+     <Longitude>-79.2446</Longitude>
+     <Elevation>1.9</Elevation>
+     <Depth>0.5</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>0</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>GEOPHYSICAL</Type>
+     <SampleRate>2E02</SampleRate>
+     <Sensor>
+      <Type>KINEMETRICS</Type>
+      <Description>Accelerometer</Description>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Model>EPISENSOR ES-DECK</Model>
+      <SerialNumber>Etna-2-105336-I1</SerialNumber>
+     </Sensor>
+     <DataLogger>
+      <Type>KINEMETRICS</Type>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Vendor>Kinemetrics</Vendor>
+      <Model>ETNA-2</Model>
+      <SerialNumber>105336</SerialNumber>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>855302.3694710516</Value>
+       <Frequency>1.0</Frequency>
+       <InputUnits>
+         <Name>m/s**2</Name>
+         <Description>Acceleration in meters per second squared</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>Digital Count in Digital counts</Description>
+       </OutputUnits>
+     </InstrumentSensitivity>
+     </Response>
+    </Channel>
+    <Channel code="HNZ" locationCode="00" startDate="2025-02-11T18:00:00.0000" restrictedStatus="open">
+     <Comment>
+      <Value>[INTERNAL-SENSOR::EPISENSOR ES-DECK::Etna-2-105336-I1], [LOGGER::ETNA-2::105336]</Value>
+      <BeginEffectiveTime>2025-02-11T18:00:00.0000</BeginEffectiveTime>
+     </Comment>
+     <Latitude>33.3349</Latitude>
+     <Longitude>-79.2446</Longitude>
+     <Elevation>1.9</Elevation>
+     <Depth>0.5</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>-90</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>GEOPHYSICAL</Type>
+     <SampleRate>2E02</SampleRate>
+     <Sensor>
+      <Type>KINEMETRICS</Type>
+      <Description>Accelerometer</Description>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Model>EPISENSOR ES-DECK</Model>
+      <SerialNumber>Etna-2-105336-I1</SerialNumber>
+     </Sensor>
+     <DataLogger>
+      <Type>KINEMETRICS</Type>
+      <Manufacturer>KINEMETRICS</Manufacturer>
+      <Vendor>Kinemetrics</Vendor>
+      <Model>ETNA-2</Model>
+      <SerialNumber>105336</SerialNumber>
+     </DataLogger>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>855302.3694710516</Value>
+       <Frequency>1.0</Frequency>
+       <InputUnits>
+         <Name>m/s**2</Name>
+         <Description>Acceleration in meters per second squared</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>Digital Count in Digital counts</Description>
+       </OutputUnits>
+     </InstrumentSensitivity>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+ </FDSNStationXML>
