@@ -13,8 +13,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
 `
 console.log(`SeisPlotJS: ${sp.version}`)
-const spverEl = document.querySelector<HTMLSpanElement>('#spversion');
-if (spverEl) {spverEl.innerHTML = sp.version;}
+sp.util.updateVersionText('#sp-version');
 let heliEnd = getHeliNowTime();
 
 let pageState: PageState = {
