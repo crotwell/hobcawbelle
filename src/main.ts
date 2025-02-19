@@ -85,6 +85,11 @@ function setupButtons(pageState: PageState) {
 }
 
 setupButtons(pageState);
-loadChannels(pageState).then( () => {
+loadChannels(pageState)
+.catch( err => {
+  console.log("unable to retrieve stationxml, skipping");
+  console.log(err);
+})
+.then( () => {
   do_realtime(pageState);
 });
