@@ -108,6 +108,7 @@ export function loadEarthquakes(pageState: PageState): Promise<Array<sp.quakeml.
 }
 
 export const SELECTED_ROW = "selectedRow";
+export const SELECT_COLOR = "green";
 export function setupSelectable(quakeTable: sp.infotable.QuakeTable,
                                 quakeMap: sp.leafletutil.QuakeStationMap,
                                 pageState: PageState) {
@@ -117,7 +118,7 @@ export function setupSelectable(quakeTable: sp.infotable.QuakeTable,
         padding-right: 5px;
       }
       table tbody tr.${SELECTED_ROW} td {
-        background-color: green;
+        background-color: ${SELECT_COLOR};
         color: white;
       }
     `);
@@ -156,7 +157,7 @@ export function doSelectQuake(quake: sp.quakeml.Quake,
     quakeMap.quakeList.forEach((q: sp.quakeml.Quake) => {
       quakeMap.removeColorClass(sp.leafletutil.cssClassForQuake(q));
     });
-    quakeMap.colorClass(sp.leafletutil.cssClassForQuake(quake), "green");
+    quakeMap.colorClass(sp.leafletutil.cssClassForQuake(quake), SELECT_COLOR);
     if (quakeRow) {
       let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
       allRows.forEach((r: HTMLElement) => {
