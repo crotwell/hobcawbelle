@@ -33,7 +33,6 @@ export function do_realtime(pageState: PageState) {
     duration: Duration.fromISO("PT5M"),
     alignmentTime: DateTime.utc(),
     offset: Duration.fromMillis(0),
-    minRedrawMillis: 100,
     networkList: pageState.networkList,
     removeTrend: true
   };
@@ -59,16 +58,7 @@ export function do_realtime(pageState: PageState) {
   rtDisp.organizedDisplay.draw();
   rtDisp.animationScaler.animate();
 
-  // give time for display to draw, then use pixels to get optimal redraw time
-  setTimeout(() => {
-    let animationIntervalMillis =
-      sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay).toMillis();
-    while (animationIntervalMillis > 0 && animationIntervalMillis < minAnimationInterval) {
-      animationIntervalMillis *= 2;
-    }
-    rtDisp.animationScaler.minRedrawMillis = animationIntervalMillis;
-    console.log(`min redraw millis= ${rtDisp.animationScaler.minRedrawMillis}`);
-  }, 1000);
+
 
 
 
