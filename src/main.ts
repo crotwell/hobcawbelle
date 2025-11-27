@@ -23,7 +23,7 @@ let pageState: PageState = {
   location: "00",
   channelCodeList: ["HHZ", "HHN", "HHE", "HNZ", "HNN", "HNE"],
   stationCodeList: ["BELLE"],
-  heliChannel: sp.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_BELLE_00_H_N_Z"),
+  heliChannel: sp.fdsnsourceid.FDSNSourceId.parse("FDSN:CO_BELLE_00_H_H_Z"),
   heliWindow: sp.util.durationEnd("P1D", heliEnd),
   datalink: null,
   quakeList: [],
